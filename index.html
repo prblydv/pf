@@ -184,6 +184,42 @@
             background-color: #00ff00;
             transition: width 0.5s;
         }
+        .tech-logo {
+            transition: all 0.3s ease;
+        }
+        .tech-logo:hover {
+            transform: scale(1.1);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .rotate-animation {
+            animation: rotate 4s linear infinite;
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .bounce-animation {
+            animation: bounce 1.5s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col">
@@ -210,6 +246,124 @@
             <button class="dialog-option" onclick="setVisitorType('friend')">
                 <i data-feather="user" class="mr-2"></i> Friend
             </button>
+        </div>
+    </div>
+    
+    <!-- AI Recruiter Page -->
+    <div id="ai-recruiter-page" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div class="terminal-window w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <div class="terminal-header">
+                <div class="flex">
+                    <div class="terminal-button button-red" onclick="closeAiPage()"></div>
+                    <div class="terminal-button button-yellow"></div>
+                    <div class="terminal-button button-green"></div>
+                </div>
+                <div class="ml-4 text-sm text-gray-300">ai_recruiter@portfolio: ~</div>
+            </div>
+            <div class="terminal-body overflow-y-auto p-6">
+                <h2 class="text-2xl font-bold text-green-400 mb-6">AI Technical Skills</h2>
+                
+                <!-- Languages Section -->
+                <div class="mb-8" data-aos="fade-up">
+                    <h3 class="text-xl font-bold text-blue-400 mb-4 flex items-center">
+                        <i data-feather="code" class="mr-2"></i> Languages
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" class="w-12 h-12 mb-2">
+                            <span>Python</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" class="w-12 h-12 mb-2">
+                            <span>Java</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
+                            <div class="w-12 h-12 mb-2 flex items-center justify-center bg-blue-900 rounded">
+                                <span class="text-lg font-bold">SQL</span>
+                            </div>
+                            <span>SQL</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Libraries Section -->
+                <div class="mb-8" data-aos="fade-up" data-aos-delay="200">
+                    <h3 class="text-xl font-bold text-purple-400 mb-4 flex items-center">
+                        <i data-feather="book" class="mr-2"></i> Libraries & Frameworks
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" alt="PyTorch" class="w-12 h-12 mb-2">
+                            <span>PyTorch</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
+                            <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="HuggingFace" class="w-12 h-12 mb-2">
+                            <span>HuggingFace</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="TensorFlow" class="w-12 h-12 mb-2">
+                            <span>TensorFlow</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" alt="Scikit-learn" class="w-12 h-12 mb-2">
+                            <span>Scikit-learn</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" alt="Pandas" class="w-12 h-12 mb-2">
+                            <span>Pandas</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy" class="w-12 h-12 mb-2">
+                            <span>NumPy</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg" alt="OpenCV" class="w-12 h-12 mb-2">
+                            <span>OpenCV</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="Node.js" class="w-12 h-12 mb-2">
+                            <span>Node.js</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tools Section -->
+                <div data-aos="fade-up" data-aos-delay="400">
+                    <h3 class="text-xl font-bold text-yellow-400 mb-4 flex items-center">
+                        <i data-feather="tool" class="mr-2"></i> Tools & Platforms
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="Git" class="w-12 h-12 mb-2">
+                            <span>Git</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker" class="w-12 h-12 mb-2">
+                            <span>Docker</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
+                            <img src="https://cdn.kaggle.com/avatars/thumbnails/1474514-kg.png" alt="Kaggle" class="w-12 h-12 mb-2 rounded">
+                            <span>Kaggle</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VSCode" class="w-12 h-12 mb-2">
+                            <span>VSCode</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="TensorBoard" class="w-12 h-12 mb-2">
+                            <span>TensorBoard</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="Linux" class="w-12 h-12 mb-2">
+                            <span>Linux</span>
+                        </div>
+                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" alt="GCP" class="w-12 h-12 mb-2">
+                            <span>GCP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -307,41 +461,18 @@
             
             <!-- Terminal Body -->
             <div class="terminal-body flex-1 overflow-y-auto" id="terminal-body">
-                <div class="terminal-line">
-                    <span class="prompt">visitor@portfolio:~$</span>
-                    <span class="command"> whoami</span>
-                </div>
                 <div class="terminal-line output">
-                    Welcome to my portfolio explorer! I'm a passionate developer with expertise in full-stack development and AI.
-                </div>
-                <div class="terminal-line mt-4">
-                    <span class="prompt">visitor@portfolio:~$</span>
-                    <span class="command"> ls -la</span>
-                </div>
-                <div class="terminal-line output">
-                    total 24<br>
-                    drwxr-xr-x  5 visitor visitor 4096 Jun 12 10:30 .<br>
-                    drwxr-xr-x  3 root    root    4096 Jun 12 10:25 ..<br>
-                    drwxr-xr-x  2 visitor visitor 4096 Jun 12 10:30 <span class="folder" onclick="showContent('tech')">tech_stack</span><br>
-                    drwxr-xr-x  2 visitor visitor 4096 Jun 12 10:30 <span class="folder" onclick="showContent('projects')">projects</span><br>
-                    drwxr-xr-x  2 visitor visitor 4096 Jun 12 10:30 contact<br>
-                    -rw-r--r--  1 visitor visitor  220 Jun 12 10:25 README.md
-                </div>
-                <div class="terminal-line mt-4">
-                    <span class="prompt">visitor@portfolio:~$</span>
-                    <span class="command"> cat README.md</span>
-                </div>
-                <div class="terminal-line output">
-                    # Portfolio Explorer<br><br>
-                    Welcome to my interactive portfolio! I've organized my work into different categories for easy navigation.<br><br>
-                    To get started, you can:<br>
-                    - Explore my <span class="folder" onclick="showContent('tech')">tech_stack</span> directory<br>
-                    - Browse my <span class="folder" onclick="showContent('projects')">projects</span> folder<br>
-                    - View my <span class="folder">contact</span> information<br><br>
-                    Or simply type one of the following commands:<br>
-                    - <span class="command">show tech</span><br>
-                    - <span class="command">show projects</span><br>
-                    - <span class="command">show contact</span>
+                    <h2 class="text-xl font-bold text-green-400 mb-4">AI Engineer & Full Stack Developer</h2>
+                    <p class="mb-4">I'm a passionate developer with expertise in artificial intelligence, machine learning, and full-stack development. My work focuses on creating intelligent systems that solve real-world problems.</p>
+                    <p class="mb-4">With a strong foundation in both software engineering and data science, I bridge the gap between cutting-edge AI research and practical applications.</p>
+                    <div class="flex items-center mb-4">
+                        <span class="mr-2">></span>
+                        <span class="folder cursor-pointer text-yellow-300" onclick="showContent('tech')">View Technical Skills</span>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <span class="mr-2">></span>
+                        <span class="folder cursor-pointer text-blue-300" onclick="showContent('projects')">Explore Key Projects</span>
+                    </div>
                 </div>
                 <div class="terminal-line mt-4" id="command-line">
                     <span class="prompt">visitor@portfolio:~$</span>
@@ -602,7 +733,7 @@
                     
                     <div id="ai-projects" class="hidden">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="project-card p-5">
+                            <div class="project-card p-5 cursor-pointer" onclick="openProject('nlp-chatbot')">
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-xl font-bold text-pink-400">NLP Chatbot</h3>
                                     <span class="text-xs bg-pink-900 text-pink-300 px-2 py-1 rounded">NLP</span>
@@ -615,14 +746,14 @@
                                     <span class="text-xs bg-gray-700 px-2 py-1 rounded">FastAPI</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <a href="#" class="text-pink-400 hover:underline">View Project</a>
+                                    <span class="text-pink-400 hover:underline">View Project</span>
                                     <a href="#" class="text-gray-400 hover:text-white">
                                         <i data-feather="github"></i>
                                     </a>
                                 </div>
                             </div>
                             
-                            <div class="project-card p-5">
+                            <div class="project-card p-5 cursor-pointer" onclick="openProject('computer-vision')">
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-xl font-bold text-indigo-400">Computer Vision System</h3>
                                     <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Computer Vision</span>
@@ -635,14 +766,14 @@
                                     <span class="text-xs bg-gray-700 px-2 py-1 rounded">CUDA</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <a href="#" class="text-indigo-400 hover:underline">View Project</a>
+                                    <span class="text-indigo-400 hover:underline">View Project</span>
                                     <a href="#" class="text-gray-400 hover:text-white">
                                         <i data-feather="github"></i>
                                     </a>
                                 </div>
                             </div>
                             
-                            <div class="project-card p-5">
+                            <div class="project-card p-5 cursor-pointer" onclick="openProject('recommendation-engine')">
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-xl font-bold text-teal-400">Recommendation Engine</h3>
                                     <span class="text-xs bg-teal-900 text-teal-300 px-2 py-1 rounded">Machine Learning</span>
@@ -655,14 +786,14 @@
                                     <span class="text-xs bg-gray-700 px-2 py-1 rounded">Redis</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <a href="#" class="text-teal-400 hover:underline">View Project</a>
+                                    <span class="text-teal-400 hover:underline">View Project</span>
                                     <a href="#" class="text-gray-400 hover:text-white">
                                         <i data-feather="github"></i>
                                     </a>
                                 </div>
                             </div>
                             
-                            <div class="project-card p-5">
+                            <div class="project-card p-5 cursor-pointer" onclick="openProject('sentiment-analysis')">
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-xl font-bold text-orange-400">Sentiment Analysis API</h3>
                                     <span class="text-xs bg-orange-900 text-orange-300 px-2 py-1 rounded">NLP</span>
@@ -675,7 +806,7 @@
                                     <span class="text-xs bg-gray-700 px-2 py-1 rounded">Docker</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <a href="#" class="text-orange-400 hover:underline">View Project</a>
+                                    <span class="text-orange-400 hover:underline">View Project</span>
                                     <a href="#" class="text-gray-400 hover:text-white">
                                         <i data-feather="github"></i>
                                     </a>
@@ -717,6 +848,38 @@
             }
         }
         
+        // Visitor type variable
+        let visitorType = 'friend'; // default
+        
+        // Set visitor type and proceed
+        function setVisitorType(type) {
+            visitorType = type;
+            document.getElementById('visitor-dialog').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+            
+            // If AI recruiter, show the AI tech stack page
+            if (type === 'ai') {
+                document.getElementById('ai-recruiter-page').classList.remove('hidden');
+            }
+            
+            // Customize content based on visitor type
+            if (type === 'ai') {
+                // AI recruiters see AI projects and tech stack
+                console.log("AI Recruiter mode activated");
+            } else if (type === 'software') {
+                // Software recruiters see software projects and tech stack
+                console.log("Software Recruiter mode activated");
+            } else {
+                // Friends see everything
+                console.log("Friend mode activated");
+            }
+        }
+        
+        // Close AI recruiter page
+        function closeAiPage() {
+            document.getElementById('ai-recruiter-page').classList.add('hidden');
+        }
+        
         // Close modal
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
@@ -727,15 +890,17 @@
             if (type === 'software') {
                 document.getElementById('software-projects').classList.remove('hidden');
                 document.getElementById('ai-projects').classList.add('hidden');
-                document.querySelector('#projects-modal .border-b-2').classList.add('border-blue-400', 'text-blue-400');
-                document.querySelector('#projects-modal .border-b-2 + button').classList.remove('border-blue-400', 'text-blue-400');
-                document.querySelector('#projects-modal .border-b-2 + button').classList.add('text-gray-400');
+                // Update button styles
+                const buttons = document.querySelectorAll('#projects-modal .flex.border-b button');
+                buttons[0].className = 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400';
+                buttons[1].className = 'px-4 py-2 text-gray-400 hover:text-white';
             } else {
                 document.getElementById('software-projects').classList.add('hidden');
                 document.getElementById('ai-projects').classList.remove('hidden');
-                document.querySelector('#projects-modal .border-b-2').classList.remove('border-blue-400', 'text-blue-400');
-                document.querySelector('#projects-modal .border-b-2 + button').classList.add('border-blue-400', 'text-blue-400');
-                document.querySelector('#projects-modal .border-b-2 + button').classList.remove('text-gray-400');
+                // Update button styles
+                const buttons = document.querySelectorAll('#projects-modal .flex.border-b button');
+                buttons[0].className = 'px-4 py-2 text-gray-400 hover:text-white';
+                buttons[1].className = 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400';
             }
         }
         
@@ -775,6 +940,16 @@
             } else if (command === 'show ai') {
                 showContent('ai');
                 return;
+            } else if (command === 'whoami') {
+                // Show AI recruiter page when whoami is typed by AI recruiter
+                if (visitorType === 'ai') {
+                    document.getElementById('ai-recruiter-page').classList.remove('hidden');
+                    return;
+                } else {
+                    outputLine = document.createElement('div');
+                    outputLine.className = 'terminal-line output';
+                    outputLine.textContent = "I'm a passionate developer with expertise in full-stack development and AI.";
+                }
             } else if (command === 'help' || command === '') {
                 outputLine = document.createElement('div');
                 outputLine.className = 'terminal-line output';
@@ -784,6 +959,7 @@
                     - show projects : Browse projects<br>
                     - show software : View software projects<br>
                     - show ai : View AI projects<br>
+                    - whoami : Show user information<br>
                     - help : Show this help message<br>
                     - clear : Clear terminal
                 `;
@@ -796,7 +972,9 @@
                 outputLine.textContent = `Command not found: ${command}. Type 'help' for available commands.`;
             }
             
-            terminalBody.appendChild(outputLine);
+            if (outputLine) {
+                terminalBody.appendChild(outputLine);
+            }
             terminalBody.scrollTop = terminalBody.scrollHeight;
         }
         
@@ -843,28 +1021,75 @@
             }, 100);
         }
         
-        // Set visitor type and show content
-        function setVisitorType(type) {
-            visitorType = type;
-            document.getElementById('visitor-dialog').style.display = 'none';
-            document.getElementById('main-content').style.display = 'flex';
+        // Show customized tech stack based on visitor type
+        function showCustomizedTech() {
+            const modal = document.getElementById('tech-modal');
+            modal.classList.remove('hidden');
             
-            // Customize content based on visitor type
-            if (type === 'ai') {
-                // Show AI projects by default
-                setTimeout(() => showContent('ai'), 1000);
-            } else if (type === 'software') {
-                // Show software projects by default
-                setTimeout(() => showContent('software'), 1000);
+            // Hide/show sections based on visitor type
+            if (visitorType === 'ai') {
+                document.querySelector('.md\\:grid-cols-3').classList.remove('md:grid-cols-3');
+                document.querySelector('.md\\:grid-cols-3').classList.add('md:grid-cols-2');
+                document.querySelector('.md\\:grid-cols-3 > div:last-child').style.display = 'none';
+            } else if (visitorType === 'software') {
+                document.querySelector('.md\\:grid-cols-3 > div:last-child').style.display = 'none';
+                document.querySelector('.md\\:grid-cols-3 div:nth-child(3)').style.display = 'none';
             } else {
-                // Show both for friends
-                setTimeout(() => showContent('projects'), 1000);
+                // Friend - show all
+                document.querySelector('.md\\:grid-cols-3').classList.add('md:grid-cols-3');
+                document.querySelector('.md\\:grid-cols-3').classList.remove('md:grid-cols-2');
+                document.querySelector('.md\\:grid-cols-3 > div:last-child').style.display = 'block';
+                document.querySelector('.md\\:grid-cols-3 div:nth-child(3)').style.display = 'block';
+            }
+        }
+        
+        // Override showContent to use customized tech
+        function showContent(type) {
+            if (type === 'tech') {
+                showCustomizedTech();
+            } else if (type === 'projects') {
+                document.getElementById('projects-modal').classList.remove('hidden');
+                // Show appropriate projects based on visitor type
+                if (visitorType === 'ai') {
+                    showProjectType('ai');
+                } else if (visitorType === 'software') {
+                    showProjectType('software');
+                } else {
+                    showProjectType('software'); // Default to software for friends
+                }
+            } else if (type === 'software') {
+                showProjectType('software');
+                document.getElementById('projects-modal').classList.remove('hidden');
+            } else if (type === 'ai') {
+                showProjectType('ai');
+                document.getElementById('projects-modal').classList.remove('hidden');
             }
         }
         
         // Initialize with boot sequence
         window.onload = function() {
             bootSystem();
+        };
+        
+        // Override showContent to handle visitor type
+        const originalShowContent = showContent;
+        showContent = function(type) {
+            if (type === 'tech') {
+                showCustomizedTech();
+            } else if (type === 'projects') {
+                document.getElementById('projects-modal').classList.remove('hidden');
+                // Show appropriate projects based on visitor type
+                if (visitorType === 'ai') {
+                    showProjectType('ai');
+                } else if (visitorType === 'software') {
+                    showProjectType('software');
+                } else {
+                    // For friends, show software projects by default
+                    showProjectType('software');
+                }
+            } else {
+                originalShowContent(type);
+            }
         };
     </script>
 </body>
