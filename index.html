@@ -15,8 +15,8 @@
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
         body {
             font-family: 'JetBrains Mono', monospace;
-            background-color: #0f0f15;
-            color: #e0e0e0;
+            background-color: #000;
+            color: #00ff00;
             overflow: hidden;
         }
         .terminal-window {
@@ -110,10 +110,110 @@
             margin-left: 4px;
             vertical-align: middle;
         }
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+        .boot-text {
+            white-space: pre-wrap;
+            text-align: left;
+            max-width: 800px;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .dialog-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .dialog-content {
+            background-color: #1a1a25;
+            border-radius: 8px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #34344e;
+        }
+        .dialog-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #252536;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dialog-option:hover {
+            background-color: #44475a;
+            transform: translateX(5px);
+        }
+        .loading-bar {
+            width: 300px;
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .loading-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #00ff00;
+            transition: width 0.5s;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col">
-    <div class="flex-1 flex flex-col md:flex-row">
+    <!-- Boot Screen -->
+    <div id="boot-screen" class="boot-screen">
+        <div class="boot-text" id="boot-text"></div>
+        <div class="loading-bar">
+            <div class="loading-fill" id="loading-fill"></div>
+        </div>
+        <div id="boot-status">Initializing system...</div>
+    </div>
+    
+    <!-- Visitor Type Dialog -->
+    <div id="visitor-dialog" class="dialog-box">
+        <div class="dialog-content">
+            <h2 class="text-2xl font-bold text-green-400 mb-6">Who are you?</h2>
+            <p class="text-gray-300 mb-6">Please select your role to customize your portfolio experience:</p>
+            <button class="dialog-option" onclick="setVisitorType('ai')">
+                <i data-feather="cpu" class="mr-2"></i> AI Recruiter
+            </button>
+            <button class="dialog-option" onclick="setVisitorType('software')">
+                <i data-feather="code" class="mr-2"></i> Software Recruiter
+            </button>
+            <button class="dialog-option" onclick="setVisitorType('friend')">
+                <i data-feather="user" class="mr-2"></i> Friend
+            </button>
+        </div>
+    </div>
+    
+    <div class="flex-1 flex flex-col md:flex-row" id="main-content" style="display: none;">
         <!-- Sidebar -->
         <div class="explorer-sidebar w-full md:w-64 p-4 flex flex-col">
             <div class="mb-6">
@@ -700,16 +800,71 @@
             terminalBody.scrollTop = terminalBody.scrollHeight;
         }
         
-        // Initialize with a welcome message
+        // Boot sequence
+        function bootSystem() {
+            const bootText = document.getElementById('boot-text');
+            const loadingFill = document.getElementById('loading-fill');
+            const bootStatus = document.getElementById('boot-status');
+            const bootScreen = document.getElementById('boot-screen');
+            const mainContent = document.getElementById('main-content');
+            const visitorDialog = document.getElementById('visitor-dialog');
+            
+            const bootMessages = [
+                "Starting kernel...",
+                "Initializing hardware...",
+                "Loading drivers...",
+                "Mounting filesystems...",
+                "Starting system services...",
+                "Loading user environment...",
+                "Initializing portfolio explorer...",
+                "System ready!"
+            ];
+            
+            let progress = 0;
+            let messageIndex = 0;
+            
+            const bootInterval = setInterval(() => {
+                progress += 5;
+                loadingFill.style.width = progress + '%';
+                
+                if (progress % 15 === 0 && messageIndex < bootMessages.length) {
+                    bootText.innerHTML += bootMessages[messageIndex] + '\n';
+                    bootStatus.textContent = bootMessages[messageIndex];
+                    messageIndex++;
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(bootInterval);
+                    setTimeout(() => {
+                        bootScreen.style.display = 'none';
+                        visitorDialog.style.display = 'flex';
+                    }, 500);
+                }
+            }, 100);
+        }
+        
+        // Set visitor type and show content
+        function setVisitorType(type) {
+            visitorType = type;
+            document.getElementById('visitor-dialog').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+            
+            // Customize content based on visitor type
+            if (type === 'ai') {
+                // Show AI projects by default
+                setTimeout(() => showContent('ai'), 1000);
+            } else if (type === 'software') {
+                // Show software projects by default
+                setTimeout(() => showContent('software'), 1000);
+            } else {
+                // Show both for friends
+                setTimeout(() => showContent('projects'), 1000);
+            }
+        }
+        
+        // Initialize with boot sequence
         window.onload = function() {
-            setTimeout(() => {
-                const terminalBody = document.getElementById('terminal-body');
-                const welcomeLine = document.createElement('div');
-                welcomeLine.className = 'terminal-line output';
-                welcomeLine.innerHTML = '<br>Welcome to my portfolio! Type <span class="command">help</span> for available commands.';
-                terminalBody.appendChild(welcomeLine);
-                terminalBody.scrollTop = terminalBody.scrollHeight;
-            }, 1000);
+            bootSystem();
         };
     </script>
 </body>
