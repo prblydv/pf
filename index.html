@@ -7,10 +7,9 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
         body {
@@ -102,13 +101,24 @@
         .folder-item.open .folder-closed { display: none; }
         .folder-children { display: none; }
         .folder-item.open .folder-children { display: block; }
+        /* Hide native caret; we use custom cursor */
+        #command-input {
+            caret-color: transparent;
+            min-width: 1px;
+            display: inline-block;
+        }
         .terminal-cursor {
             display: inline-block;
-            width: 8px;
-            height: 16px;
-            background-color: #50fa7b;
+            width: 2px;                 /* thin vertical bar */
+            height: 1em;                /* match text height */
+            background-color: #50fa7b;  /* terminal green */
             margin-left: 4px;
-            vertical-align: middle;
+            vertical-align: text-bottom;
+            animation: caret-blink 1s steps(2, start) infinite;
+        }
+        @keyframes caret-blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
         }
         .boot-screen {
             position: fixed;
@@ -124,7 +134,16 @@
             align-items: center;
             color: #00ff00;
             font-family: 'Courier New', monospace;
+            transition: opacity .3s ease;
         }
+        .boot-screen.fade-out { opacity: 0; }
+        .boot-screen::after{
+            content:"";
+            position:absolute; inset:0; pointer-events:none;
+            background: repeating-linear-gradient(to bottom, rgba(0,255,0,0.05) 0 2px, transparent 2px 4px);
+            animation: scanlines 6s linear infinite;
+        }
+        @keyframes scanlines { from { transform: translateY(0); } to { transform: translateY(4px); } }
         .boot-text {
             white-space: pre-wrap;
             text-align: left;
@@ -171,19 +190,29 @@
             transform: translateX(5px);
         }
         .loading-bar {
-            width: 300px;
-            height: 20px;
-            background-color: #333;
+            width: 320px;
+            height: 18px;
+            background: linear-gradient(180deg,#222,#333);
             border-radius: 10px;
             margin: 20px 0;
             overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,.6);
         }
         .loading-fill {
+            position: relative;
             height: 100%;
             width: 0%;
-            background-color: #00ff00;
-            transition: width 0.5s;
+            background: linear-gradient(90deg, #00ff66, #00ff00);
+            box-shadow: 0 0 10px #00ff66, 0 0 20px rgba(0,255,100,.3);
+            transition: width 0.2s ease-out;
         }
+        .loading-fill::after{
+            content:"";
+            position:absolute; top:0; left:-40%; height:100%; width:40%;
+            background: linear-gradient(120deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+            animation: shimmer 1s linear infinite;
+        }
+        @keyframes shimmer{ from{ left:-40%; } to{ left:110%; } }
         .tech-logo {
             transition: all 0.3s ease;
         }
@@ -220,6 +249,29 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-15px); }
         }
+
+        /* AI recruiter skills grid */
+        .ai-section-title { color: #7bf59b; font-weight: 700; margin: 18px 0 10px; }
+        .ai-skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 14px; }
+        .ai-skill-tile {
+            background: linear-gradient(145deg, #0b0b10, #141422);
+            border: 1px solid #1f3d2a;
+            border-radius: 10px;
+            padding: 12px 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #cde8d5;
+            box-shadow: 0 0 0 rgba(0,0,0,0);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+            cursor: pointer;
+            animation: float 3.6s ease-in-out infinite;
+        }
+        .ai-skill-tile:hover {
+            transform: translateY(-6px);
+            border-color: #39ff88;
+            box-shadow: 0 0 12px rgba(57,255,136,.25), inset 0 0 8px rgba(57,255,136,.1);
+        }
+        .ai-skill-logo { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 0 4px rgba(0,255,0,.2)); }
+        .ai-chip { display:inline-block; border:1px dashed #2a7a4c; color:#a0ffbf; padding:6px 10px; border-radius:8px; margin:6px; background:rgba(0, 20, 10, .6); }
     </style>
 </head>
 <body class="h-screen flex flex-col">
@@ -376,26 +428,15 @@
             </div>
             
             <div class="flex-1 overflow-y-auto">
-                <div class="folder-item mb-2">
-                    <div class="explorer-item flex items-center text-yellow-300" onclick="toggleFolder(this)">
-                        <i data-feather="folder" class="mr-2 folder-closed"></i>
-                        <i data-feather="folder-minus" class="mr-2 folder-open"></i>
-                        <span>tech_stack</span>
-                    </div>
-                    <div class="folder-children ml-6 mt-2">
-                        <div class="explorer-item flex items-center text-blue-300">
-                            <i data-feather="file-text" class="mr-2"></i>
-                            <span>frontend.txt</span>
-                        </div>
-                        <div class="explorer-item flex items-center text-purple-300">
-                            <i data-feather="file-text" class="mr-2"></i>
-                            <span>backend.txt</span>
-                        </div>
-                        <div class="explorer-item flex items-center text-pink-300">
-                            <i data-feather="file-text" class="mr-2"></i>
-                            <span>tools.txt</span>
-                        </div>
-                    </div>
+                <!-- Quick action: Terminal -->
+                <div class="explorer-item flex items-center text-green-300 cursor-pointer mb-2" onclick="showPanel('terminal')">
+                    <i data-feather="terminal" class="mr-2"></i>
+                    <span>terminal</span>
+                </div>
+                <!-- Single Tech Stack entry; opens skills panel -->
+                <div class="explorer-item flex items-center text-yellow-300 cursor-pointer mb-2" onclick="showContent('tech')">
+                    <i data-feather="folder" class="mr-2"></i>
+                    <span>tech_stack</span>
                 </div>
                 
                 <div class="folder-item mb-2">
@@ -456,7 +497,7 @@
                     <div class="terminal-button button-yellow"></div>
                     <div class="terminal-button button-green"></div>
                 </div>
-                <div class="ml-4 text-sm text-gray-300">portfolio_explorer@terminal: ~</div>
+                <div class="ml-4 text-sm text-gray-300" id="panel-title">portfolio_explorer@terminal: ~</div>
             </div>
             
             <!-- Terminal Body -->
@@ -476,8 +517,220 @@
                 </div>
                 <div class="terminal-line mt-4" id="command-line">
                     <span class="prompt">visitor@portfolio:~$</span>
-                    <span id="command-input" contenteditable="true" class="outline-none border-b border-green-400 ml-1"></span>
+                    <span id="command-input" contenteditable="true" aria-label="Terminal input" class="outline-none border-b border-green-400 ml-1"></span>
                     <span class="terminal-cursor"></span>
+                </div>
+            </div>
+            
+            <!-- Skills Panel (hidden by default) -->
+            <div id="skills-panel" class="terminal-body flex-1 overflow-y-auto hidden p-6">
+                <h2 class="text-2xl font-bold text-green-400 mb-6">Technical Skills</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="project-card p-5">
+                        <h3 class="text-xl font-bold text-blue-400 mb-4 flex items-center"><i data-feather="code" class="mr-2"></i> Frontend</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-blue-900 text-blue-300"><i data-feather="code"></i></div><span>React</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-blue-900 text-blue-300"><i data-feather="code"></i></div><span>Vue.js</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-blue-900 text-blue-300"><i data-feather="code"></i></div><span>Tailwind CSS</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-blue-900 text-blue-300"><i data-feather="code"></i></div><span>TypeScript</span></div>
+                        </div>
+                    </div>
+
+                    <div class="project-card p-5">
+                        <h3 class="text-xl font-bold text-purple-400 mb-4 flex items-center"><i data-feather="server" class="mr-2"></i> Backend</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-purple-900 text-purple-300"><i data-feather="server"></i></div><span>Node.js</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-purple-900 text-purple-300"><i data-feather="server"></i></div><span>Python</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-purple-900 text-purple-300"><i data-feather="server"></i></div><span>MongoDB</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-purple-900 text-purple-300"><i data-feather="server"></i></div><span>PostgreSQL</span></div>
+                        </div>
+                    </div>
+
+                    <div class="project-card p-5">
+                        <h3 class="text-xl font-bold text-yellow-400 mb-4 flex items-center"><i data-feather="tool" class="mr-2"></i> Tools & DevOps</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-yellow-900 text-yellow-300"><i data-feather="tool"></i></div><span>Docker</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-yellow-900 text-yellow-300"><i data-feather="tool"></i></div><span>AWS</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-yellow-900 text-yellow-300"><i data-feather="tool"></i></div><span>Git</span></div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded"><div class="tech-icon bg-yellow-900 text-yellow-300"><i data-feather="tool"></i></div><span>Jenkins</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">AI & Machine Learning</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="project-card p-4 flex items-center"><div class="tech-icon bg-pink-900 text-pink-300"><i data-feather="cpu"></i></div><span>TensorFlow</span></div>
+                        <div class="project-card p-4 flex items-center"><div class="tech-icon bg-pink-900 text-pink-300"><i data-feather="cpu"></i></div><span>PyTorch</span></div>
+                        <div class="project-card p-4 flex items-center"><div class="tech-icon bg-pink-900 text-pink-300"><i data-feather="cpu"></i></div><span>NLP</span></div>
+                        <div class="project-card p-4 flex items-center"><div class="tech-icon bg-pink-900 text-pink-300"><i data-feather="cpu"></i></div><span>Computer Vision</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Panel (hidden by default) -->
+            <div id="projects-panel" class="terminal-body flex-1 overflow-y-auto hidden p-6">
+                <h2 class="text-2xl font-bold text-green-400 mb-6">Projects</h2>
+
+                <div class="mb-8">
+                    <div class="flex border-b border-gray-700 mb-6">
+                        <button class="px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400" onclick="showProjectType('software')">Software Projects</button>
+                        <button class="px-4 py-2 text-gray-400 hover:text-white" onclick="showProjectType('ai')">AI Projects</button>
+                    </div>
+
+                    <!-- SOFTWARE -->
+                    <div id="software-projects">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-blue-400">E-Commerce Platform</h3>
+                                    <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">Full Stack</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A complete e-commerce solution with React frontend, Node.js backend, and MongoDB database.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">React</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Node.js</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">MongoDB</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Stripe API</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-blue-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-purple-400">Task Management App</h3>
+                                    <span class="text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded">Frontend</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A productivity application with drag-and-drop interface and real-time collaboration features.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Vue.js</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Firebase</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Tailwind CSS</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-purple-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-yellow-400">DevOps Dashboard</h3>
+                                    <span class="text-xs bg-yellow-900 text-yellow-300 px-2 py-1 rounded">Backend</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A monitoring dashboard for CI/CD pipelines with real-time metrics and alerts.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Docker</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Kubernetes</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Grafana</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-yellow-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-green-400">API Gateway</h3>
+                                    <span class="text-xs bg-green-900 text-green-300 px-2 py-1 rounded">Infrastructure</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A scalable API gateway solution with rate limiting, authentication, and analytics.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Go</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Redis</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">PostgreSQL</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">AWS</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-green-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI -->
+                    <div id="ai-projects" class="hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="project-card p-5 cursor-pointer">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-pink-400">NLP Chatbot</h3>
+                                    <span class="text-xs bg-pink-900 text-pink-300 px-2 py-1 rounded">NLP</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">An intelligent chatbot using transformer models for customer service automation.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">TensorFlow</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">BERT</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">FastAPI</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-pink-400 hover:underline">View Project</span>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="project-card p-5 cursor-pointer">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-indigo-400">Computer Vision System</h3>
+                                    <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Computer Vision</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">Real-time object detection system for industrial quality control.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">PyTorch</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">OpenCV</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">YOLO</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">CUDA</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-indigo-400 hover:underline">View Project</span>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="project-card p-5 cursor-pointer">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-teal-400">Recommendation Engine</h3>
+                                    <span class="text-xs bg-teal-900 text-teal-300 px-2 py-1 rounded">Machine Learning</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">Personalized recommendation system using collaborative filtering and deep learning.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Scikit-learn</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Pandas</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Redis</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-teal-400 hover:underline">View Project</span>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="project-card p-5 cursor-pointer">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-orange-400">Sentiment Analysis API</h3>
+                                    <span class="text-xs bg-orange-900 text-orange-300 px-2 py-1 rounded">NLP</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">API service for analyzing sentiment in social media content with real-time processing.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Flask</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Hugging Face</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Docker</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-orange-400 hover:underline">View Project</span>
+                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -820,8 +1073,8 @@
     </div>
 
     <script>
-        AOS.init();
-        feather.replace();
+        if (window.AOS) { try { AOS.init(); } catch(e){} }
+        if (window.feather) { try { feather.replace(); } catch(e){} }
         
         // Toggle folder open/close
         function toggleFolder(element) {
@@ -830,21 +1083,38 @@
             feather.replace();
         }
         
-        // Show content in terminal
+        // Panel switching: Terminal <-> Skills <-> Projects (same area/size)
+        function showPanel(panel) {
+            const title = document.getElementById('panel-title');
+            const t = document.getElementById('terminal-body');
+            const s = document.getElementById('skills-panel');
+            const p = document.getElementById('projects-panel');
+            [t, s, p].forEach(el => el && el.classList.add('hidden'));
+            if (panel === 'skills') {
+                s.classList.remove('hidden');
+                title.textContent = 'tech_stack@portfolio: ~';
+            } else if (panel === 'projects') {
+                p.classList.remove('hidden');
+                title.textContent = 'projects@portfolio: ~';
+            } else {
+                t.classList.remove('hidden');
+                title.textContent = 'portfolio_explorer@terminal: ~';
+                focusCommandInput && focusCommandInput();
+            }
+        }
+
+        // Show content request mapping
         function showContent(type) {
-            const terminalBody = document.getElementById('terminal-body');
-            const commandLine = document.getElementById('command-line');
-            
-            if (type === 'tech') {
-                document.getElementById('tech-modal').classList.remove('hidden');
+            if (type === 'tech' || type === 'skills') {
+                showPanel('skills');
             } else if (type === 'projects') {
-                document.getElementById('projects-modal').classList.remove('hidden');
+                showPanel('projects');
             } else if (type === 'software') {
+                showPanel('projects');
                 showProjectType('software');
-                document.getElementById('projects-modal').classList.remove('hidden');
             } else if (type === 'ai') {
+                showPanel('projects');
                 showProjectType('ai');
-                document.getElementById('projects-modal').classList.remove('hidden');
             }
         }
         
@@ -852,10 +1122,18 @@
         let visitorType = 'friend'; // default
         
         // Set visitor type and proceed
-        function setVisitorType(type) {
-            visitorType = type;
-            document.getElementById('visitor-dialog').style.display = 'none';
-            document.getElementById('main-content').style.display = 'flex';
+function setVisitorType(type) {
+    visitorType = type;
+    document.getElementById('visitor-dialog').style.display = 'none';
+    document.getElementById('main-content').style.display = 'flex';
+    // Land in terminal and show quick instructions
+    showPanel('terminal');
+    showTerminalInstructions();
+    const focusLater = () => {
+        const el = document.getElementById('command-input');
+        if (el) el.focus();
+    };
+    setTimeout(focusLater, 50);
             
             // If AI recruiter, show the AI tech stack page
             if (type === 'ai') {
@@ -880,10 +1158,29 @@
             document.getElementById('ai-recruiter-page').classList.add('hidden');
         }
         
-        // Close modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
+// Close modal (legacy; not used after inline panels but kept safe)
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+// Focus the contenteditable terminal input
+function focusCommandInput(){ const el=document.getElementById('command-input'); if(el){ el.focus(); } }
+
+// Show a small help block at terminal start
+function showTerminalInstructions(){
+  const terminalBody=document.getElementById('terminal-body');
+  if(!terminalBody) return;
+  const block=document.createElement('div');
+  block.className='terminal-line output text-gray-300';
+  block.innerHTML=`Tip: try commands below and press Enter<br>
+  - show tech  • open Skills<br>
+  - show projects  • open Projects<br>
+  - show software  • Software tab<br>
+  - show ai  • AI tab<br>
+  - help • list commands, clear • clear screen`;
+  terminalBody.appendChild(block);
+  terminalBody.scrollTop=terminalBody.scrollHeight;
+}
         
         // Show project type
         function showProjectType(type) {
@@ -891,14 +1188,14 @@
                 document.getElementById('software-projects').classList.remove('hidden');
                 document.getElementById('ai-projects').classList.add('hidden');
                 // Update button styles
-                const buttons = document.querySelectorAll('#projects-modal .flex.border-b button');
+                const buttons = document.querySelectorAll('#projects-panel .flex.border-b button');
                 buttons[0].className = 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400';
                 buttons[1].className = 'px-4 py-2 text-gray-400 hover:text-white';
             } else {
                 document.getElementById('software-projects').classList.add('hidden');
                 document.getElementById('ai-projects').classList.remove('hidden');
                 // Update button styles
-                const buttons = document.querySelectorAll('#projects-modal .flex.border-b button');
+                const buttons = document.querySelectorAll('#projects-panel .flex.border-b button');
                 buttons[0].className = 'px-4 py-2 text-gray-400 hover:text-white';
                 buttons[1].className = 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400';
             }
@@ -913,6 +1210,49 @@
                 this.textContent = '';
             }
         });
+
+        // Utility: move caret to end of contenteditable
+        function setEndOfContenteditable(el){
+            try{
+                const range=document.createRange();
+                range.selectNodeContents(el);
+                range.collapse(false);
+                const sel=window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }catch(_){}
+        }
+
+        // Utility: is terminal visible (not hidden)
+        function isTerminalVisible(){
+            const t=document.getElementById('terminal-body');
+            return t && !t.classList.contains('hidden');
+        }
+
+        // Global key routing: type anywhere to the terminal input
+        window.addEventListener('keydown', function(e){
+            const el=document.getElementById('command-input');
+            if(!el || !isTerminalVisible()) return;
+            const active=document.activeElement;
+            const printable = e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey;
+            const special = ['Backspace','Enter','Tab'];
+            if (active === el) return; // native handling when already focused
+            if (!printable && !special.includes(e.key)) return;
+
+            // Route to terminal
+            e.preventDefault();
+            el.focus();
+            if (printable){
+                el.textContent += e.key;
+            } else if (e.key === 'Backspace'){
+                el.textContent = el.textContent.slice(0,-1);
+            } else if (e.key === 'Enter'){
+                const command = el.textContent.trim().toLowerCase();
+                processCommand(command);
+                el.textContent = '';
+            }
+            setEndOfContenteditable(el);
+        }, true);
         
         function processCommand(command) {
             const terminalBody = document.getElementById('terminal-body');
@@ -1000,55 +1340,141 @@
             
             let progress = 0;
             let messageIndex = 0;
-            
+            const stepSize = Math.ceil(100 / bootMessages.length);
+
             const bootInterval = setInterval(() => {
-                progress += 5;
+                // Faster progression for snappier feel
+                progress = Math.min(100, progress + 12);
                 loadingFill.style.width = progress + '%';
-                
-                if (progress % 15 === 0 && messageIndex < bootMessages.length) {
-                    bootText.innerHTML += bootMessages[messageIndex] + '\n';
-                    bootStatus.textContent = bootMessages[messageIndex];
+
+                // Emit next message when crossing step thresholds
+                while (messageIndex < bootMessages.length && progress >= (messageIndex + 1) * stepSize) {
+                    const msg = bootMessages[messageIndex];
+                    bootText.innerHTML += msg + '\n';
+                    bootStatus.textContent = msg;
                     messageIndex++;
                 }
-                
+
                 if (progress >= 100) {
                     clearInterval(bootInterval);
+                    // Quick fade out then show dialog
+                    bootScreen.classList.add('fade-out');
                     setTimeout(() => {
                         bootScreen.style.display = 'none';
                         visitorDialog.style.display = 'flex';
-                    }, 500);
+                    }, 250);
                 }
-            }, 100);
+            }, 80);
         }
         
-        // Show customized tech stack based on visitor type
+        // Cache default skills markup to restore for non-AI visitors
+        let __defaultSkillsHTML = null;
+
+        // Render AI recruiter skills with floating logos and Linux vibe
+        function renderAiSkillsPanel(panel){
+            const logos = {
+              python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+              java: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
+              sql: '',
+              pytorch: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg',
+              huggingface: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg',
+              tensorflow: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg',
+              sklearn: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg',
+              pandas: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
+              numpy: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg',
+              opencv: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg',
+              node: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+              git: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+              docker: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+              kaggle: 'https://www.kaggle.com/static/images/site-logo.svg',
+              vscode: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg',
+              tensorboard: 'https://upload.wikimedia.org/wikipedia/commons/1/11/TensorFlowLogo.svg',
+              linux: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg',
+              gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg'
+            };
+
+            function tile(name, key){
+                const img = logos[key] || '';
+                const imgTag = img ? `<img class="ai-skill-logo" src="${img}" alt="${name}">` : `<div class="ai-chip">${name}</div>`;
+                return `<div class="ai-skill-tile" onclick="gotoSkillProjects('${key || name.toLowerCase()}')">${imgTag}<div class="mt-2 text-sm">${name}</div></div>`;
+            }
+
+            const html = `
+                <div class="p-6">
+                  <h2 class="text-2xl font-bold text-green-400 mb-6">AI Technical Skills</h2>
+
+                  <div class="mb-6">
+                    <div class="ai-section-title">Languages</div>
+                    <div class="ai-skill-grid">
+                      ${tile('Python','python')}
+                      ${tile('SQL','sql')}
+                      ${tile('Java','java')}
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
+                    <div class="ai-section-title">Libraries & Frameworks</div>
+                    <div class="ai-skill-grid">
+                      ${tile('PyTorch','pytorch')}
+                      ${tile('HuggingFace','huggingface')}
+                      ${tile('TensorFlow','tensorflow')}
+                      ${tile('Scikit-learn','sklearn')}
+                      ${tile('Pandas','pandas')}
+                      ${tile('NumPy','numpy')}
+                      ${tile('OpenCV','opencv')}
+                      ${tile('Node.js','node')}
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
+                    <div class="ai-section-title">Tools</div>
+                    <div class="ai-skill-grid">
+                      ${tile('Git','git')}
+                      ${tile('Docker','docker')}
+                      ${tile('Kaggle','kaggle')}
+                      ${tile('VS Code','vscode')}
+                      ${tile('TensorBoard','tensorboard')}
+                      ${tile('Linux','linux')}
+                      ${tile('GCP','gcp')}
+                    </div>
+                  </div>
+
+                  <div class="mb-2">
+                    <div class="ai-section-title">ML Focus</div>
+                    <div>
+                      <span class="ai-chip" onclick="gotoSkillProjects('data-preprocessing')">Data Preprocessing</span>
+                      <span class="ai-chip" onclick="gotoSkillProjects('workflows')">Machine Learning Workflows</span>
+                      <span class="ai-chip" onclick="gotoSkillProjects('deployment')">Model Deployment</span>
+                      <span class="ai-chip" onclick="gotoSkillProjects('evaluation')">Model Evaluation</span>
+                      <span class="ai-chip" onclick="gotoSkillProjects('training')">Training</span>
+                    </div>
+                  </div>
+                </div>
+            `;
+            panel.innerHTML = html;
+        }
+
+        // Show customized tech stack based on visitor type (inline skills panel)
         function showCustomizedTech() {
-            const modal = document.getElementById('tech-modal');
-            modal.classList.remove('hidden');
-            
-            // Hide/show sections based on visitor type
+            showPanel('skills');
+            const panel = document.getElementById('skills-panel');
+            if (!__defaultSkillsHTML) __defaultSkillsHTML = panel.innerHTML; // snapshot initial markup
+
             if (visitorType === 'ai') {
-                document.querySelector('.md\\:grid-cols-3').classList.remove('md:grid-cols-3');
-                document.querySelector('.md\\:grid-cols-3').classList.add('md:grid-cols-2');
-                document.querySelector('.md\\:grid-cols-3 > div:last-child').style.display = 'none';
-            } else if (visitorType === 'software') {
-                document.querySelector('.md\\:grid-cols-3 > div:last-child').style.display = 'none';
-                document.querySelector('.md\\:grid-cols-3 div:nth-child(3)').style.display = 'none';
+                // Replace default content with AI logos grid
+                renderAiSkillsPanel(panel);
             } else {
-                // Friend - show all
-                document.querySelector('.md\\:grid-cols-3').classList.add('md:grid-cols-3');
-                document.querySelector('.md\\:grid-cols-3').classList.remove('md:grid-cols-2');
-                document.querySelector('.md\\:grid-cols-3 > div:last-child').style.display = 'block';
-                document.querySelector('.md\\:grid-cols-3 div:nth-child(3)').style.display = 'block';
+                // Restore original skills view for other visitor types
+                panel.innerHTML = __defaultSkillsHTML;
             }
         }
         
-        // Override showContent to use customized tech
+        // Override showContent to use customized tech (inline)
         function showContent(type) {
             if (type === 'tech') {
                 showCustomizedTech();
             } else if (type === 'projects') {
-                document.getElementById('projects-modal').classList.remove('hidden');
+                showPanel('projects');
                 // Show appropriate projects based on visitor type
                 if (visitorType === 'ai') {
                     showProjectType('ai');
@@ -1059,10 +1485,10 @@
                 }
             } else if (type === 'software') {
                 showProjectType('software');
-                document.getElementById('projects-modal').classList.remove('hidden');
+                showPanel('projects');
             } else if (type === 'ai') {
                 showProjectType('ai');
-                document.getElementById('projects-modal').classList.remove('hidden');
+                showPanel('projects');
             }
         }
         
@@ -1070,14 +1496,22 @@
         window.onload = function() {
             bootSystem();
         };
+
+        // Navigate to projects for a given skill (placeholder wiring)
+        function gotoSkillProjects(slug){
+            console.log('Open projects for skill:', slug);
+            showPanel('projects');
+            showProjectType('ai');
+            // Future: filter/highlight projects by slug
+        }
         
-        // Override showContent to handle visitor type
+        // Override showContent to handle visitor type (inline panels)
         const originalShowContent = showContent;
         showContent = function(type) {
             if (type === 'tech') {
                 showCustomizedTech();
             } else if (type === 'projects') {
-                document.getElementById('projects-modal').classList.remove('hidden');
+                showPanel('projects');
                 // Show appropriate projects based on visitor type
                 if (visitorType === 'ai') {
                     showProjectType('ai');
