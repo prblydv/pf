@@ -3,298 +3,714 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio | Creative Designer & Developer</title>
+    <title>Portfolio Explorer</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <style>
-        html {
-            scroll-behavior: smooth;
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #0f0f15;
+            color: #e0e0e0;
+            overflow: hidden;
         }
-        .custom-bg {
-            background-color: #f8f9fa;
+        .terminal-window {
+            background-color: #1a1a25;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
-        .text-gradient {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .terminal-header {
+            background-color: #252536;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .button-red { background-color: #ff5f56; }
+        .button-yellow { background-color: #ffbd2e; }
+        .button-green { background-color: #27c93f; }
+        .terminal-body {
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        .terminal-line {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .prompt { color: #50fa7b; }
+        .command { color: #8be9fd; }
+        .output { color: #f8f8f2; }
+        .folder { color: #ffb86c; cursor: pointer; }
+        .file { color: #bd93f9; cursor: pointer; }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .explorer-sidebar {
+            background-color: #1e1e2d;
+            border-right: 1px solid #34344e;
+        }
+        .explorer-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .explorer-item:hover {
+            background-color: #2d2d44;
+        }
+        .explorer-item.active {
+            background-color: #44475a;
+        }
+        .project-card {
+            background: linear-gradient(145deg, #1a1a25, #252536);
+            border-radius: 8px;
+            border: 1px solid #34344e;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
-        .nav-link {
-            position: relative;
+        .tech-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 12px;
         }
-        .nav-link:after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #3b82f6;
-            transition: width 0.3s ease;
-        }
-        .nav-link:hover:after {
-            width: 100%;
+        .folder-open { display: none; }
+        .folder-closed { display: block; }
+        .folder-item.open .folder-open { display: block; }
+        .folder-item.open .folder-closed { display: none; }
+        .folder-children { display: none; }
+        .folder-item.open .folder-children { display: block; }
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: #50fa7b;
+            margin-left: 4px;
+            vertical-align: middle;
         }
     </style>
 </head>
-<body class="custom-bg font-sans antialiased">
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-white shadow-sm z-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="#" class="text-xl font-bold text-gray-900">Portfolio</a>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#work" class="nav-link text-gray-700 hover:text-gray-900">Work</a>
-                    <a href="#about" class="nav-link text-gray-700 hover:text-gray-900">About</a>
-                    <a href="#contact" class="nav-link text-gray-700 hover:text-gray-900">Contact</a>
-                </div>
-                <div class="md:hidden flex items-center">
-                    <button class="mobile-menu-button">
-                        <i data-feather="menu"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="min-h-screen flex items-center pt-16">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div data-aos="fade-right">
-                    <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                        Hi, I'm <span class="text-gradient">Alex</span>
-                    </h1>
-                    <h2 class="text-xl md:text-2xl text-gray-600 mb-8">
-                        A creative designer & developer building digital experiences.
-                    </h2>
-                    <div class="flex space-x-4">
-                        <a href="#work" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
-                            View Work
-                        </a>
-                        <a href="#contact" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition duration-300">
-                            Contact Me
-                        </a>
-                    </div>
-                </div>
-                <div data-aos="fade-left" class="flex justify-center">
-                    <div class="relative">
-                        <div class="absolute -inset-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl opacity-75 blur"></div>
-                        <img src="http://static.photos/people/640x360/1" alt="Profile" class="relative rounded-2xl w-full max-w-md">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Work Section -->
-    <section id="work" class="py-20 bg-white">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Selected Work</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Here are some of my recent projects that showcase my design and development skills.</p>
+<body class="h-screen flex flex-col">
+    <div class="flex-1 flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <div class="explorer-sidebar w-full md:w-64 p-4 flex flex-col">
+            <div class="mb-6">
+                <h1 class="text-xl font-bold text-green-400">~/portfolio</h1>
+                <p class="text-xs text-gray-400">Portfolio Explorer v2.1.0</p>
             </div>
             
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Project 1 -->
-                <div class="project-card bg-white rounded-xl overflow-hidden shadow-md transition duration-300" data-aos="fade-up" data-aos-delay="100">
-                    <div class="h-48 overflow-hidden">
-                        <img src="http://static.photos/technology/640x360/1" alt="Project 1" class="w-full h-full object-cover">
+            <div class="flex-1 overflow-y-auto">
+                <div class="folder-item mb-2">
+                    <div class="explorer-item flex items-center text-yellow-300" onclick="toggleFolder(this)">
+                        <i data-feather="folder" class="mr-2 folder-closed"></i>
+                        <i data-feather="folder-minus" class="mr-2 folder-open"></i>
+                        <span>tech_stack</span>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">E-commerce Platform</h3>
-                        <p class="text-gray-600 mb-4">A modern e-commerce solution with seamless checkout experience.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">React</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Node.js</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">MongoDB</span>
+                    <div class="folder-children ml-6 mt-2">
+                        <div class="explorer-item flex items-center text-blue-300">
+                            <i data-feather="file-text" class="mr-2"></i>
+                            <span>frontend.txt</span>
+                        </div>
+                        <div class="explorer-item flex items-center text-purple-300">
+                            <i data-feather="file-text" class="mr-2"></i>
+                            <span>backend.txt</span>
+                        </div>
+                        <div class="explorer-item flex items-center text-pink-300">
+                            <i data-feather="file-text" class="mr-2"></i>
+                            <span>tools.txt</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Project 2 -->
-                <div class="project-card bg-white rounded-xl overflow-hidden shadow-md transition duration-300" data-aos="fade-up" data-aos-delay="200">
-                    <div class="h-48 overflow-hidden">
-                        <img src="http://static.photos/minimal/640x360/2" alt="Project 2" class="w-full h-full object-cover">
+                <div class="folder-item mb-2">
+                    <div class="explorer-item flex items-center text-yellow-300" onclick="toggleFolder(this)">
+                        <i data-feather="folder" class="mr-2 folder-closed"></i>
+                        <i data-feather="folder-minus" class="mr-2 folder-open"></i>
+                        <span>projects</span>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Mobile App UI</h3>
-                        <p class="text-gray-600 mb-4">Clean and intuitive mobile interface for productivity app.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Figma</span>
-                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Swift</span>
-                            <span class="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full">Firebase</span>
+                    <div class="folder-children ml-6 mt-2">
+                        <div class="explorer-item flex items-center text-blue-300" onclick="showContent('software')">
+                            <i data-feather="folder" class="mr-2"></i>
+                            <span>software_projects</span>
+                        </div>
+                        <div class="explorer-item flex items-center text-purple-300" onclick="showContent('ai')">
+                            <i data-feather="folder" class="mr-2"></i>
+                            <span>ai_projects</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Project 3 -->
-                <div class="project-card bg-white rounded-xl overflow-hidden shadow-md transition duration-300" data-aos="fade-up" data-aos-delay="300">
-                    <div class="h-48 overflow-hidden">
-                        <img src="http://static.photos/abstract/640x360/3" alt="Project 3" class="w-full h-full object-cover">
+                <div class="folder-item mb-2">
+                    <div class="explorer-item flex items-center text-yellow-300" onclick="toggleFolder(this)">
+                        <i data-feather="folder" class="mr-2 folder-closed"></i>
+                        <i data-feather="folder-minus" class="mr-2 folder-open"></i>
+                        <span>contact</span>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Brand Identity</h3>
-                        <p class="text-gray-600 mb-4">Complete visual identity for a startup company.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-pink-100 text-pink-800 text-xs rounded-full">Illustrator</span>
-                            <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">Photoshop</span>
-                            <span class="px-3 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">Branding</span>
+                    <div class="folder-children ml-6 mt-2">
+                        <div class="explorer-item flex items-center text-green-300">
+                            <i data-feather="mail" class="mr-2"></i>
+                            <span>email.txt</span>
+                        </div>
+                        <div class="explorer-item flex items-center text-blue-400">
+                            <i data-feather="github" class="mr-2"></i>
+                            <span>github.txt</span>
+                        </div>
+                        <div class="explorer-item flex items-center text-blue-300">
+                            <i data-feather="linkedin" class="mr-2"></i>
+                            <span>linkedin.txt</span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="text-center mt-12" data-aos="fade-up">
-                <a href="#" class="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition duration-300">
-                    View All Projects
-                    <i data-feather="arrow-right" class="ml-2"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="py-20 bg-gray-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div data-aos="fade-right">
-                    <img src="http://static.photos/office/640x360/4" alt="About" class="rounded-2xl w-full">
-                </div>
-                <div data-aos="fade-left">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-6">About Me</h2>
-                    <p class="text-gray-600 mb-6">
-                        I'm a multidisciplinary designer and developer with 5+ years of experience creating digital products that are both beautiful and functional. My approach combines technical expertise with thoughtful design to deliver exceptional user experiences.
-                    </p>
-                    <p class="text-gray-600 mb-8">
-                        When I'm not designing or coding, you can find me hiking, reading, or experimenting with new technologies. I'm passionate about continuous learning and pushing the boundaries of what's possible in digital design.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div class="flex items-center">
-                            <i data-feather="check-circle" class="text-blue-500 mr-2"></i>
-                            <span class="text-gray-700">UI/UX Design</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i data-feather="check-circle" class="text-blue-500 mr-2"></i>
-                            <span class="text-gray-700">Frontend Development</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i data-feather="check-circle" class="text-blue-500 mr-2"></i>
-                            <span class="text-gray-700">Brand Identity</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i data-feather="check-circle" class="text-blue-500 mr-2"></i>
-                            <span class="text-gray-700">Prototyping</span>
-                        </div>
-                    </div>
-                    <a href="#" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
-                        Download Resume
-                        <i data-feather="download" class="ml-2"></i>
-                    </a>
+            <div class="mt-auto pt-4 border-t border-gray-700">
+                <div class="flex items-center text-sm text-gray-400">
+                    <i data-feather="hard-drive" class="mr-2"></i>
+                    <span>1.2 TB Free</span>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Get In Touch</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Have a project in mind or want to discuss potential opportunities? I'd love to hear from you.</p>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Terminal Header -->
+            <div class="terminal-header">
+                <div class="flex">
+                    <div class="terminal-button button-red"></div>
+                    <div class="terminal-button button-yellow"></div>
+                    <div class="terminal-button button-green"></div>
+                </div>
+                <div class="ml-4 text-sm text-gray-300">portfolio_explorer@terminal: ~</div>
             </div>
             
-            <div class="bg-gray-50 rounded-2xl p-8 md:p-12 shadow-sm" data-aos="fade-up" data-aos-delay="100">
-                <form>
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label for="name" class="block text-gray-700 mb-2">Name</label>
-                            <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-300">
-                        </div>
-                        <div>
-                            <label for="email" class="block text-gray-700 mb-2">Email</label>
-                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-300">
-                        </div>
-                    </div>
-                    <div class="mb-6">
-                        <label for="subject" class="block text-gray-700 mb-2">Subject</label>
-                        <input type="text" id="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-300">
-                    </div>
-                    <div class="mb-6">
-                        <label for="message" class="block text-gray-700 mb-2">Message</label>
-                        <textarea id="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-300"></textarea>
-                    </div>
-                    <button type="submit" class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
-                        Send Message
-                    </button>
-                </form>
+            <!-- Terminal Body -->
+            <div class="terminal-body flex-1 overflow-y-auto" id="terminal-body">
+                <div class="terminal-line">
+                    <span class="prompt">visitor@portfolio:~$</span>
+                    <span class="command"> whoami</span>
+                </div>
+                <div class="terminal-line output">
+                    Welcome to my portfolio explorer! I'm a passionate developer with expertise in full-stack development and AI.
+                </div>
+                <div class="terminal-line mt-4">
+                    <span class="prompt">visitor@portfolio:~$</span>
+                    <span class="command"> ls -la</span>
+                </div>
+                <div class="terminal-line output">
+                    total 24<br>
+                    drwxr-xr-x  5 visitor visitor 4096 Jun 12 10:30 .<br>
+                    drwxr-xr-x  3 root    root    4096 Jun 12 10:25 ..<br>
+                    drwxr-xr-x  2 visitor visitor 4096 Jun 12 10:30 <span class="folder" onclick="showContent('tech')">tech_stack</span><br>
+                    drwxr-xr-x  2 visitor visitor 4096 Jun 12 10:30 <span class="folder" onclick="showContent('projects')">projects</span><br>
+                    drwxr-xr-x  2 visitor visitor 4096 Jun 12 10:30 contact<br>
+                    -rw-r--r--  1 visitor visitor  220 Jun 12 10:25 README.md
+                </div>
+                <div class="terminal-line mt-4">
+                    <span class="prompt">visitor@portfolio:~$</span>
+                    <span class="command"> cat README.md</span>
+                </div>
+                <div class="terminal-line output">
+                    # Portfolio Explorer<br><br>
+                    Welcome to my interactive portfolio! I've organized my work into different categories for easy navigation.<br><br>
+                    To get started, you can:<br>
+                    - Explore my <span class="folder" onclick="showContent('tech')">tech_stack</span> directory<br>
+                    - Browse my <span class="folder" onclick="showContent('projects')">projects</span> folder<br>
+                    - View my <span class="folder">contact</span> information<br><br>
+                    Or simply type one of the following commands:<br>
+                    - <span class="command">show tech</span><br>
+                    - <span class="command">show projects</span><br>
+                    - <span class="command">show contact</span>
+                </div>
+                <div class="terminal-line mt-4" id="command-line">
+                    <span class="prompt">visitor@portfolio:~$</span>
+                    <span id="command-input" contenteditable="true" class="outline-none border-b border-green-400 ml-1"></span>
+                    <span class="terminal-cursor"></span>
+                </div>
             </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Portfolio</h3>
-                    <p class="text-gray-400">Creating digital experiences that inspire and engage users.</p>
+    </div>
+    
+    <!-- Tech Stack Modal -->
+    <div id="tech-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+        <div class="terminal-window w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="terminal-header">
+                <div class="flex">
+                    <div class="terminal-button button-red" onclick="closeModal('tech-modal')"></div>
+                    <div class="terminal-button button-yellow"></div>
+                    <div class="terminal-button button-green"></div>
                 </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#work" class="text-gray-400 hover:text-white transition duration-300">Work</a></li>
-                        <li><a href="#about" class="text-gray-400 hover:text-white transition duration-300">About</a></li>
-                        <li><a href="#contact" class="text-gray-400 hover:text-white transition duration-300">Contact</a></li>
-                    </ul>
+                <div class="ml-4 text-sm text-gray-300">tech_stack@portfolio: ~</div>
+            </div>
+            <div class="terminal-body overflow-y-auto p-6">
+                <h2 class="text-2xl font-bold text-green-400 mb-6">Technical Skills</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="project-card p-5">
+                        <h3 class="text-xl font-bold text-blue-400 mb-4 flex items-center">
+                            <i data-feather="code" class="mr-2"></i> Frontend
+                        </h3>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-blue-900 text-blue-300">
+                                    <i data-feather="code"></i>
+                                </div>
+                                <span>React</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-blue-900 text-blue-300">
+                                    <i data-feather="code"></i>
+                                </div>
+                                <span>Vue.js</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-blue-900 text-blue-300">
+                                    <i data-feather="code"></i>
+                                </div>
+                                <span>Tailwind CSS</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-blue-900 text-blue-300">
+                                    <i data-feather="code"></i>
+                                </div>
+                                <span>TypeScript</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card p-5">
+                        <h3 class="text-xl font-bold text-purple-400 mb-4 flex items-center">
+                            <i data-feather="server" class="mr-2"></i> Backend
+                        </h3>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-purple-900 text-purple-300">
+                                    <i data-feather="server"></i>
+                                </div>
+                                <span>Node.js</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-purple-900 text-purple-300">
+                                    <i data-feather="server"></i>
+                                </div>
+                                <span>Python</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-purple-900 text-purple-300">
+                                    <i data-feather="server"></i>
+                                </div>
+                                <span>MongoDB</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-purple-900 text-purple-300">
+                                    <i data-feather="server"></i>
+                                </div>
+                                <span>PostgreSQL</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card p-5">
+                        <h3 class="text-xl font-bold text-yellow-400 mb-4 flex items-center">
+                            <i data-feather="tool" class="mr-2"></i> Tools & DevOps
+                        </h3>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-yellow-900 text-yellow-300">
+                                    <i data-feather="tool"></i>
+                                </div>
+                                <span>Docker</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-yellow-900 text-yellow-300">
+                                    <i data-feather="tool"></i>
+                                </div>
+                                <span>AWS</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-yellow-900 text-yellow-300">
+                                    <i data-feather="tool"></i>
+                                </div>
+                                <span>Git</span>
+                            </div>
+                            <div class="flex items-center bg-gray-800 px-3 py-2 rounded">
+                                <div class="tech-icon bg-yellow-900 text-yellow-300">
+                                    <i data-feather="tool"></i>
+                                </div>
+                                <span>Jenkins</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                            <i data-feather="twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                            <i data-feather="linkedin"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                            <i data-feather="github"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
-                            <i data-feather="dribbble"></i>
-                        </a>
+                
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold text-green-400 mb-4">AI & Machine Learning</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="project-card p-4 flex items-center">
+                            <div class="tech-icon bg-pink-900 text-pink-300">
+                                <i data-feather="cpu"></i>
+                            </div>
+                            <span>TensorFlow</span>
+                        </div>
+                        <div class="project-card p-4 flex items-center">
+                            <div class="tech-icon bg-pink-900 text-pink-300">
+                                <i data-feather="cpu"></i>
+                            </div>
+                            <span>PyTorch</span>
+                        </div>
+                        <div class="project-card p-4 flex items-center">
+                            <div class="tech-icon bg-pink-900 text-pink-300">
+                                <i data-feather="cpu"></i>
+                            </div>
+                            <span>NLP</span>
+                        </div>
+                        <div class="project-card p-4 flex items-center">
+                            <div class="tech-icon bg-pink-900 text-pink-300">
+                                <i data-feather="cpu"></i>
+                            </div>
+                            <span>Computer Vision</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 Portfolio. All rights reserved.</p>
+        </div>
+    </div>
+    
+    <!-- Projects Modal -->
+    <div id="projects-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+        <div class="terminal-window w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <div class="terminal-header">
+                <div class="flex">
+                    <div class="terminal-button button-red" onclick="closeModal('projects-modal')"></div>
+                    <div class="terminal-button button-yellow"></div>
+                    <div class="terminal-button button-green"></div>
+                </div>
+                <div class="ml-4 text-sm text-gray-300">projects@portfolio: ~</div>
+            </div>
+            <div class="terminal-body overflow-y-auto p-6">
+                <h2 class="text-2xl font-bold text-green-400 mb-6">Projects</h2>
+                
+                <div class="mb-8">
+                    <div class="flex border-b border-gray-700 mb-6">
+                        <button class="px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400" onclick="showProjectType('software')">Software Projects</button>
+                        <button class="px-4 py-2 text-gray-400 hover:text-white" onclick="showProjectType('ai')">AI Projects</button>
+                    </div>
+                    
+                    <div id="software-projects">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-blue-400">E-Commerce Platform</h3>
+                                    <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">Full Stack</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A complete e-commerce solution with React frontend, Node.js backend, and MongoDB database.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">React</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Node.js</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">MongoDB</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Stripe API</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-blue-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-purple-400">Task Management App</h3>
+                                    <span class="text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded">Frontend</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A productivity application with drag-and-drop interface and real-time collaboration features.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Vue.js</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Firebase</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Tailwind CSS</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-purple-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-yellow-400">DevOps Dashboard</h3>
+                                    <span class="text-xs bg-yellow-900 text-yellow-300 px-2 py-1 rounded">Backend</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A monitoring dashboard for CI/CD pipelines with real-time metrics and alerts.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Docker</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Kubernetes</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Grafana</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-yellow-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-green-400">API Gateway</h3>
+                                    <span class="text-xs bg-green-900 text-green-300 px-2 py-1 rounded">Infrastructure</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">A scalable API gateway solution with rate limiting, authentication, and analytics.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Go</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Redis</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">PostgreSQL</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">AWS</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-green-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="ai-projects" class="hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-pink-400">NLP Chatbot</h3>
+                                    <span class="text-xs bg-pink-900 text-pink-300 px-2 py-1 rounded">NLP</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">An intelligent chatbot using transformer models for customer service automation.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">TensorFlow</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">BERT</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">FastAPI</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-pink-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-indigo-400">Computer Vision System</h3>
+                                    <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Computer Vision</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">Real-time object detection system for industrial quality control.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">PyTorch</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">OpenCV</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">YOLO</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">CUDA</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-indigo-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-teal-400">Recommendation Engine</h3>
+                                    <span class="text-xs bg-teal-900 text-teal-300 px-2 py-1 rounded">Machine Learning</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">Personalized recommendation system using collaborative filtering and deep learning.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Scikit-learn</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Pandas</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Redis</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-teal-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold text-orange-400">Sentiment Analysis API</h3>
+                                    <span class="text-xs bg-orange-900 text-orange-300 px-2 py-1 rounded">NLP</span>
+                                </div>
+                                <p class="text-gray-300 mb-4">API service for analyzing sentiment in social media content with real-time processing.</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Flask</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Hugging Face</span>
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Docker</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <a href="#" class="text-orange-400 hover:underline">View Project</a>
+                                    <a href="#" class="text-gray-400 hover:text-white">
+                                        <i data-feather="github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </footer>
+    </div>
 
     <script>
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true
-        });
-        
+        AOS.init();
         feather.replace();
         
-        // Mobile menu toggle
-        document.querySelector('.mobile-menu-button').addEventListener('click', function() {
-            // You would implement mobile menu functionality here
-            alert('Mobile menu would open here in a full implementation');
+        // Toggle folder open/close
+        function toggleFolder(element) {
+            const folderItem = element.parentElement;
+            folderItem.classList.toggle('open');
+            feather.replace();
+        }
+        
+        // Show content in terminal
+        function showContent(type) {
+            const terminalBody = document.getElementById('terminal-body');
+            const commandLine = document.getElementById('command-line');
+            
+            if (type === 'tech') {
+                document.getElementById('tech-modal').classList.remove('hidden');
+            } else if (type === 'projects') {
+                document.getElementById('projects-modal').classList.remove('hidden');
+            } else if (type === 'software') {
+                showProjectType('software');
+                document.getElementById('projects-modal').classList.remove('hidden');
+            } else if (type === 'ai') {
+                showProjectType('ai');
+                document.getElementById('projects-modal').classList.remove('hidden');
+            }
+        }
+        
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+        
+        // Show project type
+        function showProjectType(type) {
+            if (type === 'software') {
+                document.getElementById('software-projects').classList.remove('hidden');
+                document.getElementById('ai-projects').classList.add('hidden');
+                document.querySelector('#projects-modal .border-b-2').classList.add('border-blue-400', 'text-blue-400');
+                document.querySelector('#projects-modal .border-b-2 + button').classList.remove('border-blue-400', 'text-blue-400');
+                document.querySelector('#projects-modal .border-b-2 + button').classList.add('text-gray-400');
+            } else {
+                document.getElementById('software-projects').classList.add('hidden');
+                document.getElementById('ai-projects').classList.remove('hidden');
+                document.querySelector('#projects-modal .border-b-2').classList.remove('border-blue-400', 'text-blue-400');
+                document.querySelector('#projects-modal .border-b-2 + button').classList.add('border-blue-400', 'text-blue-400');
+                document.querySelector('#projects-modal .border-b-2 + button').classList.remove('text-gray-400');
+            }
+        }
+        
+        // Terminal command handling
+        document.getElementById('command-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const command = this.textContent.trim().toLowerCase();
+                processCommand(command);
+                this.textContent = '';
+            }
         });
+        
+        function processCommand(command) {
+            const terminalBody = document.getElementById('terminal-body');
+            
+            // Add command line to terminal
+            const commandLine = document.createElement('div');
+            commandLine.className = 'terminal-line';
+            commandLine.innerHTML = `
+                <span class="prompt">visitor@portfolio:~$</span>
+                <span class="command"> ${command}</span>
+            `;
+            terminalBody.appendChild(commandLine);
+            
+            // Process command
+            let outputLine;
+            if (command === 'show tech' || command === 'cat tech_stack') {
+                showContent('tech');
+                return;
+            } else if (command === 'show projects' || command === 'ls projects') {
+                showContent('projects');
+                return;
+            } else if (command === 'show software') {
+                showContent('software');
+                return;
+            } else if (command === 'show ai') {
+                showContent('ai');
+                return;
+            } else if (command === 'help' || command === '') {
+                outputLine = document.createElement('div');
+                outputLine.className = 'terminal-line output';
+                outputLine.innerHTML = `
+                    Available commands:<br>
+                    - show tech : Display technical skills<br>
+                    - show projects : Browse projects<br>
+                    - show software : View software projects<br>
+                    - show ai : View AI projects<br>
+                    - help : Show this help message<br>
+                    - clear : Clear terminal
+                `;
+            } else if (command === 'clear') {
+                terminalBody.innerHTML = '';
+                return;
+            } else {
+                outputLine = document.createElement('div');
+                outputLine.className = 'terminal-line output';
+                outputLine.textContent = `Command not found: ${command}. Type 'help' for available commands.`;
+            }
+            
+            terminalBody.appendChild(outputLine);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+        
+        // Initialize with a welcome message
+        window.onload = function() {
+            setTimeout(() => {
+                const terminalBody = document.getElementById('terminal-body');
+                const welcomeLine = document.createElement('div');
+                welcomeLine.className = 'terminal-line output';
+                welcomeLine.innerHTML = '<br>Welcome to my portfolio! Type <span class="command">help</span> for available commands.';
+                terminalBody.appendChild(welcomeLine);
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+            }, 1000);
+        };
     </script>
 </body>
 </html>
