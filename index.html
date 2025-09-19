@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -69,6 +69,7 @@
             padding: 8px 12px;
             border-radius: 4px;
             transition: all 0.2s;
+            list-style: none; /* ensure no bullets ever show */
         }
         .explorer-item:hover {
             background-color: #2d2d44;
@@ -76,6 +77,9 @@
         .explorer-item.active {
             background-color: #44475a;
         }
+        /* Keep icon sizing consistent */
+        .explorer-item svg { width: 18px; height: 18px; }
+        .sidebar-icon { flex-shrink: 0; }
         .project-card {
             background: linear-gradient(145deg, #1a1a25, #252536);
             border-radius: 8px;
@@ -248,6 +252,29 @@
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-15px); }
+        }
+
+        .profile-photo {
+            width: 96px;
+            height: 96px;
+            border-radius: 9999px;
+            border: 2px solid rgba(57, 255, 136, 0.6);
+            box-shadow: 0 0 25px rgba(57, 255, 136, 0.28);
+            object-fit: cover;
+            background-color: #0b0b0f;
+        }
+        @media (min-width: 768px) {
+            .profile-photo {
+                width: 124px;
+                height: 124px;
+            }
+        }
+        .bio-tagline {
+            color: #7bf59b;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
         }
 
         /* AI recruiter skills grid */
@@ -446,12 +473,16 @@
                         <span>projects</span>
                     </div>
                     <div class="folder-children ml-6 mt-2">
-                        <div class="explorer-item flex items-center text-blue-300" onclick="showContent('software')">
-                            <i data-feather="folder" class="mr-2"></i>
+                        <div class="explorer-item flex items-center cursor-pointer text-blue-300 hover:bg-[#2d2d44]" onclick="showContent('software')">
+                            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h11a2 2 0 0 1 2 2z"></path>
+                            </svg>
                             <span>software_projects</span>
                         </div>
-                        <div class="explorer-item flex items-center text-purple-300" onclick="showContent('ai')">
-                            <i data-feather="folder" class="mr-2"></i>
+                        <div class="explorer-item flex items-center cursor-pointer text-purple-300 hover:bg-[#2d2d44]" onclick="showContent('ai')">
+                            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h11a2 2 0 0 1 2 2z"></path>
+                            </svg>
                             <span>ai_projects</span>
                         </div>
                     </div>
@@ -503,16 +534,23 @@
             <!-- Terminal Body -->
             <div class="terminal-body flex-1 overflow-y-auto" id="terminal-body">
                 <div class="terminal-line output">
-                    <h2 class="text-xl font-bold text-green-400 mb-4">AI Engineer & Full Stack Developer</h2>
-                    <p class="mb-4">I'm a passionate developer with expertise in artificial intelligence, machine learning, and full-stack development. My work focuses on creating intelligent systems that solve real-world problems.</p>
-                    <p class="mb-4">With a strong foundation in both software engineering and data science, I bridge the gap between cutting-edge AI research and practical applications.</p>
-                    <div class="flex items-center mb-4">
-                        <span class="mr-2">></span>
-                        <span class="folder cursor-pointer text-yellow-300" onclick="showContent('tech')">View Technical Skills</span>
+                    <div class="flex flex-col md:flex-row md:items-center md:gap-6">
+                        <img src="https://avatars.githubusercontent.com/u/111268036?v=4" alt="Prabal Yadav" class="profile-photo mb-4 md:mb-0">
+                        <div>
+                            <h2 class="text-2xl font-bold text-green-400 mb-3">AI Engineer & Full-Stack Developer</h2>
+                            <p class="mb-3 text-gray-200">AI engineer & full-stack developer (MEng, University of Birmingham) who turns research into production. I train and deploy LLM and computer vision systems with PyTorch &amp; HuggingFace on GCP and Docker, co-authored a multimodal hate-speech paper submitted to BMVC, shipped a production Android + Node.js platform with CI/CD and in-app payments, and stay sharp through competitive coding.</p>
+                            <p class="bio-tagline">AI research &amp; full-stack delivery | LLMs | CV | scalable cloud apps</p>
+                        </div>
                     </div>
-                    <div class="flex items-center mb-4">
-                        <span class="mr-2">></span>
-                        <span class="folder cursor-pointer text-blue-300" onclick="showContent('projects')">Explore Key Projects</span>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex items-center">
+                            <span class="mr-2">&gt;</span>
+                            <span class="folder cursor-pointer text-yellow-300" onclick="showContent('tech')">View Technical Skills</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="mr-2">&gt;</span>
+                            <span class="folder cursor-pointer text-blue-300" onclick="showContent('projects')">Explore Key Projects</span>
+                        </div>
                     </div>
                 </div>
                 <div class="terminal-line mt-4" id="command-line">
@@ -1109,6 +1147,9 @@
                 showPanel('skills');
             } else if (type === 'projects') {
                 showPanel('projects');
+                if (visitorType === 'ai') showProjectType('ai');
+                else if (visitorType === 'software') showProjectType('software');
+                else showProjectType('all');
             } else if (type === 'software') {
                 showPanel('projects');
                 showProjectType('software');
@@ -1116,6 +1157,7 @@
                 showPanel('projects');
                 showProjectType('ai');
             }
+            if (window.feather) { try { feather.replace(); } catch(e){} }
         }
         
         // Visitor type variable
@@ -1126,6 +1168,7 @@ function setVisitorType(type) {
     visitorType = type;
     document.getElementById('visitor-dialog').style.display = 'none';
     document.getElementById('main-content').style.display = 'flex';
+    if (window.feather) { try { feather.replace(); } catch(e){} }
     // Land in terminal and show quick instructions
     showPanel('terminal');
     showTerminalInstructions();
@@ -1135,10 +1178,7 @@ function setVisitorType(type) {
     };
     setTimeout(focusLater, 50);
             
-            // If AI recruiter, show the AI tech stack page
-            if (type === 'ai') {
-                document.getElementById('ai-recruiter-page').classList.remove('hidden');
-            }
+            // Remain on terminal for all visitor types
             
             // Customize content based on visitor type
             if (type === 'ai') {
@@ -1182,22 +1222,39 @@ function showTerminalInstructions(){
   terminalBody.scrollTop=terminalBody.scrollHeight;
 }
         
-        // Show project type
+        // Project view switching and terminal title sync
         function showProjectType(type) {
+            const software = document.getElementById('software-projects');
+            const ai = document.getElementById('ai-projects');
+            const tabs = document.querySelector('#projects-panel .flex.border-b');
+            const title = document.getElementById('panel-title');
+            if(!software || !ai) return;
+
+            const buttons = document.querySelectorAll('#projects-panel .flex.border-b button');
+            const setBtn = (iActive) => {
+                if (!buttons || buttons.length < 2) return;
+                buttons[0].className = iActive === 0 ? 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400' : 'px-4 py-2 text-gray-400 hover:text-white';
+                buttons[1].className = iActive === 1 ? 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400' : 'px-4 py-2 text-gray-400 hover:text-white';
+            };
+
             if (type === 'software') {
-                document.getElementById('software-projects').classList.remove('hidden');
-                document.getElementById('ai-projects').classList.add('hidden');
-                // Update button styles
-                const buttons = document.querySelectorAll('#projects-panel .flex.border-b button');
-                buttons[0].className = 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400';
-                buttons[1].className = 'px-4 py-2 text-gray-400 hover:text-white';
-            } else {
-                document.getElementById('software-projects').classList.add('hidden');
-                document.getElementById('ai-projects').classList.remove('hidden');
-                // Update button styles
-                const buttons = document.querySelectorAll('#projects-panel .flex.border-b button');
-                buttons[0].className = 'px-4 py-2 text-gray-400 hover:text-white';
-                buttons[1].className = 'px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400';
+                software.classList.remove('hidden');
+                ai.classList.add('hidden');
+                if (tabs) tabs.style.display = 'none';
+                setBtn(0);
+                if (title) title.textContent = 'software_projects@portfolio: ~';
+            } else if (type === 'ai') {
+                software.classList.add('hidden');
+                ai.classList.remove('hidden');
+                if (tabs) tabs.style.display = 'none';
+                setBtn(1);
+                if (title) title.textContent = 'ai_projects@portfolio: ~';
+            } else { // 'all'
+                software.classList.remove('hidden');
+                ai.classList.remove('hidden');
+                if (tabs) tabs.style.display = 'flex';
+                setBtn(-1);
+                if (title) title.textContent = 'projects@portfolio: ~';
             }
         }
         
@@ -1281,14 +1338,15 @@ function showTerminalInstructions(){
                 showContent('ai');
                 return;
             } else if (command === 'whoami') {
-                // Show AI recruiter page when whoami is typed by AI recruiter
+                // Stay in terminal; print role-specific info
+                outputLine = document.createElement('div');
+                outputLine.className = 'terminal-line output';
                 if (visitorType === 'ai') {
-                    document.getElementById('ai-recruiter-page').classList.remove('hidden');
-                    return;
+                    outputLine.textContent = "You are visiting as: AI Recruiter.";
+                } else if (visitorType === 'software') {
+                    outputLine.textContent = "You are visiting as: Software Recruiter.";
                 } else {
-                    outputLine = document.createElement('div');
-                    outputLine.className = 'terminal-line output';
-                    outputLine.textContent = "I'm a passionate developer with expertise in full-stack development and AI.";
+                    outputLine.textContent = "You are visiting as: Friend.";
                 }
             } else if (command === 'help' || command === '') {
                 outputLine = document.createElement('div');
@@ -1513,14 +1571,9 @@ function showTerminalInstructions(){
             } else if (type === 'projects') {
                 showPanel('projects');
                 // Show appropriate projects based on visitor type
-                if (visitorType === 'ai') {
-                    showProjectType('ai');
-                } else if (visitorType === 'software') {
-                    showProjectType('software');
-                } else {
-                    // For friends, show software projects by default
-                    showProjectType('software');
-                }
+                if (visitorType === 'ai') showProjectType('ai');
+                else if (visitorType === 'software') showProjectType('software');
+                else showProjectType('all');
             } else {
                 originalShowContent(type);
             }
