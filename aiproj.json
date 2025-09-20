@@ -1,0 +1,21 @@
+[
+  {
+    "id": "multimodal-hate",
+    "name": "Multimodal Hate Detection",
+    "image": "https://images.unsplash.com/photo-1527443224154-c4aa7538c6a1",
+    "description": "PyTorch classifier fusing Whisper, STFT, frames.",
+    "tech_stack": ["PyTorch", "Whisper", "HuggingFace", "NumPy"],
+    "details": [
+      {
+        "title": "Implementation",
+        "text": "We use **OpenAI Whisper** for transcript extraction, and apply `librosa` for **STFT** on audio. \n\n- All video frames sampled at 1 FPS.\n- Data fused with a simple attention layer.\n\nExample code:\n```python\nimport whisper\nmodel = whisper.load_model('base')\n```\n",
+        "image": "https://your-impl-img.png"
+      },
+      {
+        "title": "Deployment",
+        "text": "The pipeline is containerized with Docker and deployed on **GCP**.\n\n- GPU inference via CUDA\n- Orchestration via Google Cloud Run\n",
+        "image": "https://your-deploy-img.png"
+      }
+    ]
+  }
+]
