@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Vision Analytics Lab · Portfolio Explorer</title>
+    <link rel='icon' type='image/x-icon' href='/static/favicon.ico'>
+    <script src='https://cdn.tailwindcss.com'></script>
+    <link href='https://unpkg.com/aos@2.3.1/dist/aos.css' rel='stylesheet'>
+    <script src='https://unpkg.com/aos@2.3.1/dist/aos.js' defer></script>
+    <script src='https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js' defer></script>
+    <link rel='stylesheet' href='styles.css'>
+</head>
+<body class='h-screen flex flex-col' data-skip-boot='true'>
+    <div id='boot-screen' class='boot-screen hidden'></div>
+    <div id='visitor-dialog' class='hidden'></div>
+
+    <div class='flex-1 flex flex-col md:flex-row' id='main-content'>
+        <!-- Sidebar -->
+        <div class="explorer-sidebar w-full md:w-64 p-4 flex flex-col">
+            <div class="mb-6">
+                <h1 class="text-xl font-bold text-green-400">~/portfolio</h1>
+                <p class="text-xs text-gray-400">Portfolio Explorer v2.1.0</p>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto">
+                <div class="explorer-item flex items-center text-green-300 cursor-pointer mb-2" onclick="showPanel('terminal')">
+                    <i data-feather="terminal" class="mr-2"></i>
+                    <span>terminal</span>
+                </div>
+                <div class="explorer-item flex items-center text-yellow-300 cursor-pointer mb-2" onclick="showContent('tech')">
+                    <i data-feather="folder" class="mr-2"></i>
+                    <span>tech_stack</span>
+                </div>
+                <div class="folder-item mb-2">
+                    <div class="explorer-item flex items-center text-yellow-300" onclick="toggleFolder(this)">
+                        <i data-feather="folder" class="mr-2 folder-closed"></i>
+                        <i data-feather="folder-minus" class="mr-2 folder-open"></i>
+                        <span>projects</span>
+                    </div>
+                    <div class="folder-children ml-6 mt-2">
+                        <a class="explorer-item flex items-center cursor-pointer text-blue-300 hover:bg-[#2d2d44]" href="index.html#software-projects">
+                            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h11a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>software_projects</span>
+                        </a>
+                        <a class="explorer-item flex items-center cursor-pointer text-purple-300 hover:bg-[#2d2d44]" href="index.html#ai-projects-list">
+                            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h11a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>ai_projects</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="folder-item mb-2">
+                    <div class="explorer-item flex items-center text-yellow-300" onclick="toggleFolder(this)">
+                        <i data-feather="folder" class="mr-2 folder-closed"></i>
+                        <i data-feather="folder-minus" class="mr-2 folder-open"></i>
+                        <span>contact</span>
+                    </div>
+                    <div class="folder-children ml-6 mt-2">
+                        <div class="explorer-item flex items-center text-green-300">
+                            <i data-feather="mail" class="mr-2"></i>
+                            <span>email.txt</span>
+                        </div>
+                        <div class="explorer-item flex items-center text-blue-400">
+                            <i data-feather="github" class="mr-2"></i>
+                            <span>github.txt</span>
+                        </div>
+                        <div class="explorer-item flex items-center text-blue-300">
+                            <i data-feather="linkedin" class="mr-2"></i>
+                            <span>linkedin.txt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-4 text-xs text-gray-500 border-t border-[#34344e]">
+                <div>Storage: 1.2 TB Free</div>
+            </div>
+        </div>
+        <div class='flex-1 bg-[#05060a] overflow-y-auto project-detail-surface'>
+            <div id='terminal-body' class='hidden'></div>
+            <div id='skills-panel' class='hidden'></div>
+            <div id='projects-panel' class='terminal-body flex-1 overflow-y-auto p-6 md:p-10'>
+                <a class='project-back-link' href='index.html#projects-panel'><i data-feather="arrow-left"></i><span>Back to Project List</span></a>
+                <header class='project-detail-header'>
+                    <div class='project-banner-wrap'>
+                        <img src='assets/images/project-banner-placeholder.svg' alt='Vision Analytics Lab hero banner' class='project-detail-banner'>
+                    </div>
+                    <div class='project-heading-copy'>
+                        <span class='project-category-pill'>AI Project</span>
+                        <h1 class='project-detail-title'>Vision Analytics Lab</h1>
+                        <p class='project-detail-subtitle'>Turning live camera feeds into actionable quality signals.</p>
+                        <p class='project-detail-context'>Manufacturing QA leads rely on rapid detection of defects across global production lines without slowing throughput.</p>
+                    </div>
+                </header>
+
+                <section class='project-gallery-section'>
+                    <h2 class='project-section-title'>System Glimpses</h2>
+                    <div class='project-gallery-grid'>
+                        <img src='assets/images/project-diagram-placeholder.svg' alt='Vision Analytics Lab dashboard view'>
+                        <img src='assets/images/project-diagram-placeholder.svg' alt='Vision Analytics Lab flow diagram'>
+                        <img src='assets/images/project-diagram-placeholder.svg' alt='Vision Analytics Lab analytics view'>
+                    </div>
+                </section>
+
+                <section class='project-writeup'>
+                    <article>
+                        <h3>Problem</h3>
+                        <p>Manual inspections missed subtle defects and required pausing the line for quality spot checks.</p>
+                    </article>
+                    <article>
+                        <h3>Approach</h3>
+                        <p>Deploy edge-friendly models, orchestrate continuous learning pipelines, and give operators visual explanations.</p>
+                    </article>
+                    <article>
+                        <h3>What I Delivered</h3>
+                        <p>Delivered segmentation-powered alerts, operator feedback loops, and auto-labelled datasets for retraining.</p>
+                    </article>
+                    <article>
+                        <h3>Impact</h3>
+                        <p>Improved defect detection precision to 94% and shrank feedback cycles from weeks to hours.</p>
+                    </article>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src='main.js'></script>
+</body>
+</html>

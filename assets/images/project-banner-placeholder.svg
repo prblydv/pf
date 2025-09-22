@@ -1,0 +1,14 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'>
+  <defs>
+    <linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='#141427'/>
+      <stop offset='100%' stop-color='#1f2937'/>
+    </linearGradient>
+  </defs>
+  <rect width='1200' height='600' fill='url(#grad)'/>
+  <g fill='none' stroke='#39ff88' stroke-width='6' opacity='0.35'>
+    <path d='M80 520 C240 340 420 340 600 520 S960 700 1120 520'/>
+    <path d='M80 420 C240 240 420 240 600 420 S960 600 1120 420'/>
+  </g>
+  <text x='50%' y='55%' text-anchor='middle' fill='#7bf59b' font-size='72' font-family='JetBrains Mono, monospace'>Project Banner</text>
+</svg>

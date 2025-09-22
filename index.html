@@ -10,326 +10,7 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" defer></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
-        body {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: #000;
-            color: #00ff00;
-            overflow: hidden;
-        }
-        .terminal-window {
-            background-color: #1a1a25;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-        }
-        .terminal-header {
-            background-color: #252536;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-        }
-        .terminal-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .button-red { background-color: #ff5f56; }
-        .button-yellow { background-color: #ffbd2e; }
-        .button-green { background-color: #27c93f; }
-        .terminal-body {
-            padding: 20px;
-            height: 400px;
-            overflow-y: auto;
-        }
-        .terminal-line {
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-        .prompt { color: #50fa7b; }
-        .command { color: #8be9fd; }
-        .output { color: #f8f8f2; }
-        .folder { color: #ffb86c; cursor: pointer; }
-        .file { color: #bd93f9; cursor: pointer; }
-        .blink {
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        .explorer-sidebar {
-            background-color: #1e1e2d;
-            border-right: 1px solid #34344e;
-        }
-        .explorer-item {
-            padding: 8px 12px;
-            border-radius: 4px;
-            transition: all 0.2s;
-            list-style: none; /* ensure no bullets ever show */
-        }
-        .explorer-item:hover {
-            background-color: #2d2d44;
-        }
-        .explorer-item.active {
-            background-color: #44475a;
-        }
-        /* Keep icon sizing consistent */
-        .explorer-item svg { width: 18px; height: 18px; }
-        .sidebar-icon { flex-shrink: 0; }
-        .project-card {
-            background: linear-gradient(145deg, #1a1a25, #252536);
-            border-radius: 8px;
-            border: 1px solid #34344e;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-        /* Case study layout for projects */
-        .case-card { background: linear-gradient(145deg, #1a1a25, #252536); border:1px solid #34344e; border-radius:12px; padding:20px; margin-bottom:22px; display:flex; flex-direction:column; gap:16px; }
-        .case-media img { width:100%; height:240px; object-fit:cover; border-radius:12px; background:#0b0b0f; }
-        @media (max-width: 768px){ .case-media img{ height:200px; } }
-        .pill { display:inline-flex; align-items:center; font-size:12px; color:#cde8d5; border:1px solid #2a7a4c; background:rgba(0, 20, 10, .6); border-radius:9999px; padding:4px 10px; margin-right:8px; }
-        .case-title { font-size:1.35rem; font-weight:700; color:#7bf59b; margin-bottom:10px; }
-        .case-desc { color:#d0d4e4; line-height:1.55; }
-        .tech-logo-grid { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
-        .tech-logo-grid img { width:36px; height:36px; object-fit:contain; filter: drop-shadow(0 0 6px rgba(57,255,136,.25)); background:rgba(0,0,0,.25); border-radius:10px; padding:6px; }
-        .project-modal { position: fixed; inset:0; background: rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center; padding:30px; z-index:2000; }
-        .project-modal.active { display:flex; }
-        .modal-content { background:#101018; border:1px solid #34344e; border-radius:14px; max-width:960px; width:100%; max-height:90vh; overflow-y:auto; padding:30px; box-shadow:0 20px 50px rgba(0,0,0,0.6); }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .modal-header h3 { font-size:1.8rem; color:#7bf59b; font-weight:700; }
-        .modal-close { background:none; border:none; color:#d0d4e4; font-size:1.6rem; cursor:pointer; }
-        .modal-hero img { width:100%; border-radius:12px; object-fit:cover; max-height:320px; }
-        .modal-tech { margin:18px 0; display:flex; flex-wrap:wrap; gap:12px; }
-        .modal-tech img { width:44px; height:44px; object-fit:contain; background:rgba(0,0,0,0.35); border-radius:12px; padding:8px; }
-        .detail-row { display:flex; gap:24px; align-items:center; margin:26px 0; }
-        .detail-row.reverse { flex-direction:row-reverse; }
-        .detail-text h4 { font-size:1.25rem; color:#8be9fd; margin-bottom:10px; }
-        .detail-text p { color:#d0d4e4; line-height:1.6; }
-        .detail-media img { width:100%; max-width:320px; border-radius:12px; object-fit:cover; }
-        .modal-content pre { background:#1e1e2d; padding:14px; border-radius:10px; overflow-x:auto; font-family:'JetBrains Mono', monospace; color:#8be9fd; }
-        .modal-content code { font-family:'JetBrains Mono', monospace; color:#8be9fd; }
-        @media (max-width: 768px) {
-            .detail-row, .detail-row.reverse { flex-direction:column; }
-            .detail-media img { max-width:100%; }
-        }
-        body.modal-open { overflow:hidden; }
-        .tech-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            margin-right: 12px;
-        }
-        .folder-open { display: none; }
-        .folder-closed { display: block; }
-        .folder-item.open .folder-open { display: block; }
-        .folder-item.open .folder-closed { display: none; }
-        .folder-children { display: none; }
-        .folder-item.open .folder-children { display: block; }
-        /* Hide native caret; we use custom cursor */
-        #command-input {
-            caret-color: transparent;
-            min-width: 1px;
-            display: inline-block;
-        }
-        .terminal-cursor {
-            display: inline-block;
-            width: 2px;                 /* thin vertical bar */
-            height: 1em;                /* match text height */
-            background-color: #50fa7b;  /* terminal green */
-            margin-left: 4px;
-            vertical-align: text-bottom;
-            animation: caret-blink 1s steps(2, start) infinite;
-        }
-        @keyframes caret-blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-        .boot-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            transition: opacity .3s ease;
-        }
-        .boot-screen.fade-out { opacity: 0; }
-        .boot-screen::after{
-            content:"";
-            position:absolute; inset:0; pointer-events:none;
-            background: repeating-linear-gradient(to bottom, rgba(0,255,0,0.05) 0 2px, transparent 2px 4px);
-            animation: scanlines 6s linear infinite;
-        }
-        @keyframes scanlines { from { transform: translateY(0); } to { transform: translateY(4px); } }
-        .boot-text {
-            white-space: pre-wrap;
-            text-align: left;
-            max-width: 800px;
-            padding: 20px;
-            line-height: 1.5;
-        }
-        .dialog-box {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        .dialog-content {
-            background-color: #1a1a25;
-            border-radius: 8px;
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid #34344e;
-        }
-        .dialog-option {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            background-color: #252536;
-            color: #e0e0e0;
-            border: none;
-            border-radius: 4px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .dialog-option:hover {
-            background-color: #44475a;
-            transform: translateX(5px);
-        }
-        .loading-bar {
-            width: 320px;
-            height: 18px;
-            background: linear-gradient(180deg,#222,#333);
-            border-radius: 10px;
-            margin: 20px 0;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,.6);
-        }
-        .loading-fill {
-            position: relative;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #00ff66, #00ff00);
-            box-shadow: 0 0 10px #00ff66, 0 0 20px rgba(0,255,100,.3);
-            transition: width 0.2s ease-out;
-        }
-        .loading-fill::after{
-            content:"";
-            position:absolute; top:0; left:-40%; height:100%; width:40%;
-            background: linear-gradient(120deg, rgba(255,255,255,.35), rgba(255,255,255,0));
-            animation: shimmer 1s linear infinite;
-        }
-        @keyframes shimmer{ from{ left:-40%; } to{ left:110%; } }
-        .tech-logo {
-            transition: all 0.3s ease;
-        }
-        .tech-logo:hover {
-            transform: scale(1.1);
-        }
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        .rotate-animation {
-            animation: rotate 4s linear infinite;
-        }
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .bounce-animation {
-            animation: bounce 1.5s infinite;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .profile-photo {
-            width: 96px;
-            height: 96px;
-            border-radius: 9999px;
-            border: 2px solid rgba(57, 255, 136, 0.6);
-            box-shadow: 0 0 25px rgba(57, 255, 136, 0.28);
-            object-fit: cover;
-            background-color: #0b0b0f;
-        }
-        @media (min-width: 768px) {
-            .profile-photo {
-                width: 124px;
-                height: 124px;
-            }
-        }
-        .bio-tagline {
-            color: #7bf59b;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-
-        /* AI recruiter skills grid */
-        .ai-section-title { color: #7bf59b; font-weight: 700; margin: 18px 0 10px; }
-        .ai-skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 14px; }
-        .ai-skill-tile {
-            background: linear-gradient(145deg, #0b0b10, #141422);
-            border: 1px solid #1f3d2a;
-            border-radius: 10px;
-            padding: 12px 10px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #cde8d5;
-            box-shadow: 0 0 0 rgba(0,0,0,0);
-            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-            cursor: pointer;
-            animation: float 3.6s ease-in-out infinite;
-        }
-        .ai-skill-tile:hover {
-            transform: translateY(-6px);
-            border-color: #39ff88;
-            box-shadow: 0 0 12px rgba(57,255,136,.25), inset 0 0 8px rgba(57,255,136,.1);
-        }
-        .ai-skill-logo { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 0 4px rgba(0,255,0,.2)); }
-        .ai-chip { display:inline-block; border:1px dashed #2a7a4c; color:#a0ffbf; padding:6px 10px; border-radius:8px; margin:6px; background:rgba(0, 20, 10, .6); }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="h-screen flex flex-col">
     <!-- Boot Screen -->
@@ -370,7 +51,7 @@
                 <div class="ml-4 text-sm text-gray-300">ai_recruiter@portfolio: ~</div>
             </div>
             <div class="terminal-body overflow-y-auto p-6">
-                <h2 class="text-2xl font-bold text-green-400 mb-6">AI Technical Skills</h2>
+                <h2 class="text-2xl font-bold text-green-400 mb-6">Skills</h2>
                 
                 <!-- Languages Section -->
                 <div class="mb-8" data-aos="fade-up">
@@ -449,10 +130,6 @@
                         <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
                             <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker" class="w-12 h-12 mb-2">
                             <span>Docker</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
-                            <img src="https://cdn.kaggle.com/avatars/thumbnails/1474514-kg.png" alt="Kaggle" class="w-12 h-12 mb-2 rounded">
-                            <span>Kaggle</span>
                         </div>
                         <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
                             <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VSCode" class="w-12 h-12 mb-2">
@@ -640,16 +317,82 @@
             <!-- Projects Panel (hidden by default) -->
             <div id="projects-panel" class="terminal-body flex-1 overflow-y-auto hidden p-6">
                 <h2 class="text-2xl font-bold text-green-400 mb-6">Projects</h2>
+                <!-- Project showcase cards -->
+                <section id="software-projects" class="project-section hidden">
+                    <h3 class="project-section-heading">Software Projects</h3>
+                    <div class="project-stack">
+                        <article class="showcase-card">
+                            <a class="showcase-link" href="devops_dashboard.html">
+                                <div class="showcase-media">
+                                    <img src="assets/images/project-thumb-placeholder.svg" alt="DevOps Command Center thumbnail">
+                                </div>
+                                <div class="showcase-body">
+                                    <h4 class="showcase-title">DevOps Command Center</h4>
+                                    <p class="showcase-summary">Realtime health dashboards, deployment insights, and incident automation for multi-cloud delivery teams.</p>
+                                    <ul class="showcase-tech">
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="Node.js"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker"></li>
+                                    </ul>
+                                </div>
+                            </a>
+                        </article>
+                        <article class="showcase-card">
+                            <a class="showcase-link" href="cloud_finops_suite.html">
+                                <div class="showcase-media">
+                                    <img src="assets/images/project-thumb-placeholder.svg" alt="Cloud FinOps Suite thumbnail">
+                                </div>
+                                <div class="showcase-body">
+                                    <h4 class="showcase-title">Cloud FinOps Suite</h4>
+                                    <p class="showcase-summary">Forecasting, budgeting, and anomaly alerts that keep cross-cloud spend predictable for engineering leads.</p>
+                                    <ul class="showcase-tech">
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" alt="Vue"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" alt="GCP"></li>
+                                    </ul>
+                                </div>
+                            </a>
+                        </article>
+                    </div>
+                </section>
 
-                
-
-                                <div id="case-projects" class="space-y-6">
-                    <h3 class="text-xl font-bold text-blue-300">AI Highlights</h3>
-                    <div id="ai-projects-list" class="space-y-6"></div>
-
-                    <h3 class="text-xl font-bold text-yellow-300 mt-10">Software Highlights</h3>
-                    <div class="text-sm text-gray-400">Add entries to swproj.json to populate this section.</div>
-                </div>
+                <section id="ai-projects" class="project-section hidden">
+                    <h3 class="project-section-heading">AI Projects</h3>
+                    <div class="project-stack">
+                        <article class="showcase-card">
+                            <a class="showcase-link" href="vision_analytics_lab.html">
+                                <div class="showcase-media">
+                                    <img src="assets/images/project-thumb-placeholder.svg" alt="Vision Analytics Lab thumbnail">
+                                </div>
+                                <div class="showcase-body">
+                                    <h4 class="showcase-title">Vision Analytics Lab</h4>
+                                    <p class="showcase-summary">Edge-ready computer vision pipelines that surface anomalies, quality defects, and spatial heatmaps at scale.</p>
+                                    <ul class="showcase-tech">
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" alt="PyTorch"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg" alt="OpenCV"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="TensorFlow"></li>
+                                    </ul>
+                                </div>
+                            </a>
+                        </article>
+                        <article class="showcase-card">
+                            <a class="showcase-link" href="conversational_ai_playbook.html">
+                                <div class="showcase-media">
+                                    <img src="assets/images/project-thumb-placeholder.svg" alt="Conversational AI Playbook thumbnail">
+                                </div>
+                                <div class="showcase-body">
+                                    <h4 class="showcase-title">Conversational AI Playbook</h4>
+                                    <p class="showcase-summary">Voice and chat intelligence that orchestrates support triage, memory, and tone for customer delight.</p>
+                                    <ul class="showcase-tech">
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/aws/aws-original.svg" alt="AWS"></li>
+                                        <li><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="HuggingFace"></li>
+                                    </ul>
+                                </div>
+                            </a>
+                        </article>
+                    </div>
+                </section>
 
                 <div id="project-modal" class="project-modal hidden">
                     <div class="modal-content">
@@ -665,187 +408,10 @@
                         <div id="modal-details"></div>
                     </div>
                 </div>
-<div class="mb-8 hidden">
-                    <div class="flex border-b border-gray-700 mb-6">
-                        <button class="px-4 py-2 font-bold text-blue-400 border-b-2 border-blue-400" onclick="showProjectType('software')">Software Projects</button>
-                        <button class="px-4 py-2 text-gray-400 hover:text-white" onclick="showProjectType('ai')">AI Projects</button>
-                    </div>
-
-                    <!-- SOFTWARE -->
-                    <div id="software-projects">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="project-card p-5">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-blue-400">E-Commerce Platform</h3>
-                                    <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">Full Stack</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">A complete e-commerce solution with React frontend, Node.js backend, and MongoDB database.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">React</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Node.js</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">MongoDB</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Stripe API</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <a href="#" class="text-blue-400 hover:underline">View Project</a>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="project-card p-5">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-purple-400">Task Management App</h3>
-                                    <span class="text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded">Frontend</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">A productivity application with drag-and-drop interface and real-time collaboration features.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Vue.js</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Firebase</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Tailwind CSS</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <a href="#" class="text-purple-400 hover:underline">View Project</a>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="project-card p-5">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-yellow-400">DevOps Dashboard</h3>
-                                    <span class="text-xs bg-yellow-900 text-yellow-300 px-2 py-1 rounded">Backend</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">A monitoring dashboard for CI/CD pipelines with real-time metrics and alerts.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Docker</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Kubernetes</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Grafana</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <a href="#" class="text-yellow-400 hover:underline">View Project</a>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="project-card p-5">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-green-400">API Gateway</h3>
-                                    <span class="text-xs bg-green-900 text-green-300 px-2 py-1 rounded">Infrastructure</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">A scalable API gateway solution with rate limiting, authentication, and analytics.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Go</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Redis</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">PostgreSQL</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">AWS</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <a href="#" class="text-green-400 hover:underline">View Project</a>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- AI -->
-                    <div id="ai-projects" class="hidden">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="project-card p-5 cursor-pointer">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-red-400">Multimodal Hate Detection</h3>
-                                    <span class="text-xs bg-red-900 text-red-300 px-2 py-1 rounded">Multimodal AI</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">82% accuracy video classifier that fuses Whisper transcripts, STFT audio spectrograms, and key frames to flag hateful content.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">PyTorch</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Whisper</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">BERT</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Attention</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Spectrograms</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-red-400 hover:underline">View Project</span>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-                            <div class="project-card p-5 cursor-pointer">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-pink-400">NLP Chatbot</h3>
-                                    <span class="text-xs bg-pink-900 text-pink-300 px-2 py-1 rounded">NLP</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">An intelligent chatbot using transformer models for customer service automation.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">TensorFlow</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">BERT</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">FastAPI</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-pink-400 hover:underline">View Project</span>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="project-card p-5 cursor-pointer">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-indigo-400">Computer Vision System</h3>
-                                    <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Computer Vision</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">Real-time object detection system for industrial quality control.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">PyTorch</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">OpenCV</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">YOLO</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">CUDA</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-indigo-400 hover:underline">View Project</span>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="project-card p-5 cursor-pointer">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-teal-400">Recommendation Engine</h3>
-                                    <span class="text-xs bg-teal-900 text-teal-300 px-2 py-1 rounded">Machine Learning</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">Personalized recommendation system using collaborative filtering and deep learning.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Scikit-learn</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Pandas</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Redis</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-teal-400 hover:underline">View Project</span>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="project-card p-5 cursor-pointer">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-orange-400">Sentiment Analysis API</h3>
-                                    <span class="text-xs bg-orange-900 text-orange-300 px-2 py-1 rounded">NLP</span>
-                                </div>
-                                <p class="text-gray-300 mb-4">API service for analyzing sentiment in social media content with real-time processing.</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Python</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Flask</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Hugging Face</span>
-                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Docker</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-orange-400 hover:underline">View Project</span>
-                                    <a href="#" class="text-gray-400 hover:text-white"><i data-feather="github"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Tech Stack Modal -->
     <div id="tech-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
         <div class="terminal-window w-full max-w-4xl max-h-[90vh] flex flex-col">
@@ -1200,623 +766,11 @@
         </div>
     </div>
 
-    <script>
-        if (window.AOS) { try { AOS.init(); } catch(e){} }
-        if (window.feather) { try { feather.replace(); } catch(e){} }
-        
-        // Toggle folder open/close
-        function toggleFolder(element) {
-            const folderItem = element.parentElement;
-            folderItem.classList.toggle('open');
-            feather.replace();
-        }
-        
-        // Panel switching: Terminal <-> Skills <-> Projects (same area/size)
-        function showPanel(panel) {
-            const title = document.getElementById('panel-title');
-            const t = document.getElementById('terminal-body');
-            const s = document.getElementById('skills-panel');
-            const p = document.getElementById('projects-panel');
-            [t, s, p].forEach(el => el && el.classList.add('hidden'));
-            if (panel === 'skills') {
-                s.classList.remove('hidden');
-                title.textContent = 'tech_stack@portfolio: ~';
-            } else if (panel === 'projects') {
-                p.classList.remove('hidden');
-                title.textContent = 'projects@portfolio: ~';
-            } else {
-                t.classList.remove('hidden');
-                title.textContent = 'portfolio_explorer@terminal: ~';
-                focusCommandInput && focusCommandInput();
-            }
-        }
-
-        // Show content request mapping
-        function showContent(type) {
-            if (type === 'tech' || type === 'skills') {
-                showPanel('skills');
-            } else if (type === 'projects') {
-                showPanel('projects');
-                showProjectType('all');
-            } else if (type === 'software') {
-                showPanel('projects');
-                showProjectType('software');
-            } else if (type === 'ai') {
-                showPanel('projects');
-                showProjectType('ai');
-            }
-            if (window.feather) { try { feather.replace(); } catch(e){} }
-        }
-        
-        // Visitor type variable
-        let visitorType = 'friend'; // default
-        
-        // Set visitor type and proceed
-function setVisitorType(type) {
-    visitorType = type;
-    document.getElementById('visitor-dialog').style.display = 'none';
-    document.getElementById('main-content').style.display = 'flex';
-    if (window.feather) { try { feather.replace(); } catch(e){} }
-    // Land in terminal and show quick instructions
-    showPanel('terminal');
-    showTerminalInstructions();
-    const focusLater = () => {
-        const el = document.getElementById('command-input');
-        if (el) el.focus();
-    };
-    setTimeout(focusLater, 50);
-
-    console.log(`Visitor mode selected: ${type}`);
-        }
-        
-        // Close AI recruiter page
-        function closeAiPage() {
-            document.getElementById('ai-recruiter-page').classList.add('hidden');
-        }
-        
-// Close modal (legacy; not used after inline panels but kept safe)
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-}
-
-// Focus the contenteditable terminal input
-function focusCommandInput(){ const el=document.getElementById('command-input'); if(el){ el.focus(); } }
-
-// Show a small help block at terminal start
-function showTerminalInstructions(){
-  const terminalBody=document.getElementById('terminal-body');
-  if(!terminalBody) return;
-  const block=document.createElement('div');
-  block.className='terminal-line output text-gray-300';
-  block.innerHTML=`Tip: try commands below and press Enter<br>
-  - show tech  • open Skills<br>
-  - show projects  • open Projects<br>
-  - show software  • Software tab<br>
-  - show ai  • AI tab<br>
-  - help • list commands, clear • clear screen`;
-  terminalBody.appendChild(block);
-  terminalBody.scrollTop=terminalBody.scrollHeight;
-}
-        
-        // Project view switching and terminal title sync
-        function showProjectType(type) {
-            const title = document.getElementById('panel-title');
-            if (title) {
-                if (type === 'software') title.textContent = 'software_projects@portfolio: ~';
-                else if (type === 'ai') title.textContent = 'ai_projects@portfolio: ~';
-                else title.textContent = 'projects@portfolio: ~';
-            }
-
-            const software = document.getElementById('software-projects');
-            const ai = document.getElementById('ai-projects');
-            const tabs = document.querySelector('#projects-panel .flex.border-b');
-            if (software) software.classList.add('hidden');
-            if (ai) ai.classList.add('hidden');
-            if (tabs) tabs.style.display = 'none';
-        }
-        
-        // Terminal command handling
-        document.getElementById('command-input').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const command = this.textContent.trim().toLowerCase();
-                processCommand(command);
-                this.textContent = '';
-            }
-        });
-
-        // Utility: move caret to end of contenteditable
-        function setEndOfContenteditable(el){
-            try{
-                const range=document.createRange();
-                range.selectNodeContents(el);
-                range.collapse(false);
-                const sel=window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }catch(_){}
-        }
-
-        // Utility: is terminal visible (not hidden)
-        function isTerminalVisible(){
-            const t=document.getElementById('terminal-body');
-            return t && !t.classList.contains('hidden');
-        }
-
-        // Global key routing: type anywhere to the terminal input
-        window.addEventListener('keydown', function(e){
-            const el=document.getElementById('command-input');
-            if(!el || !isTerminalVisible()) return;
-            const active=document.activeElement;
-            const printable = e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey;
-            const special = ['Backspace','Enter','Tab'];
-            if (active === el) return; // native handling when already focused
-            if (!printable && !special.includes(e.key)) return;
-
-            // Route to terminal
-            e.preventDefault();
-            el.focus();
-            if (printable){
-                el.textContent += e.key;
-            } else if (e.key === 'Backspace'){
-                el.textContent = el.textContent.slice(0,-1);
-            } else if (e.key === 'Enter'){
-                const command = el.textContent.trim().toLowerCase();
-                processCommand(command);
-                el.textContent = '';
-            }
-            setEndOfContenteditable(el);
-        }, true);
-        
-        function processCommand(command) {
-            const terminalBody = document.getElementById('terminal-body');
-            
-            // Add command line to terminal
-            const commandLine = document.createElement('div');
-            commandLine.className = 'terminal-line';
-            commandLine.innerHTML = `
-                <span class="prompt">visitor@portfolio:~$</span>
-                <span class="command"> ${command}</span>
-            `;
-            terminalBody.appendChild(commandLine);
-            
-            // Process command
-            let outputLine;
-            if (command === 'show tech' || command === 'cat tech_stack') {
-                showContent('tech');
-                return;
-            } else if (command === 'show projects' || command === 'ls projects') {
-                showContent('projects');
-                return;
-            } else if (command === 'show software') {
-                showContent('software');
-                return;
-            } else if (command === 'show ai') {
-                showContent('ai');
-                return;
-            } else if (command === 'whoami') {
-                // Stay in terminal; print role-specific info
-                outputLine = document.createElement('div');
-                outputLine.className = 'terminal-line output';
-                if (visitorType === 'ai') {
-                    outputLine.textContent = "You are visiting as: AI Recruiter.";
-                } else if (visitorType === 'software') {
-                    outputLine.textContent = "You are visiting as: Software Recruiter.";
-                } else {
-                    outputLine.textContent = "You are visiting as: Friend.";
-                }
-            } else if (command === 'help' || command === '') {
-                outputLine = document.createElement('div');
-                outputLine.className = 'terminal-line output';
-                outputLine.innerHTML = `
-                    Available commands:<br>
-                    - show tech : Display technical skills<br>
-                    - show projects : Browse projects<br>
-                    - show software : View software projects<br>
-                    - show ai : View AI projects<br>
-                    - whoami : Show user information<br>
-                    - help : Show this help message<br>
-                    - clear : Clear terminal
-                `;
-            } else if (command === 'clear') {
-                terminalBody.innerHTML = '';
-                return;
-            } else {
-                outputLine = document.createElement('div');
-                outputLine.className = 'terminal-line output';
-                outputLine.textContent = `Command not found: ${command}. Type 'help' for available commands.`;
-            }
-            
-            if (outputLine) {
-                terminalBody.appendChild(outputLine);
-            }
-            terminalBody.scrollTop = terminalBody.scrollHeight;
-        }
-        
-        // Boot sequence
-        function bootSystem() {
-            const bootText = document.getElementById('boot-text');
-            const loadingFill = document.getElementById('loading-fill');
-            const bootStatus = document.getElementById('boot-status');
-            const bootScreen = document.getElementById('boot-screen');
-            const mainContent = document.getElementById('main-content');
-            const visitorDialog = document.getElementById('visitor-dialog');
-            
-            const bootMessages = [
-                "Starting kernel...",
-                "Initializing hardware...",
-                "Loading drivers...",
-                "Mounting filesystems...",
-                "Starting system services...",
-                "Loading user environment...",
-                "Initializing portfolio explorer...",
-                "System ready!"
-            ];
-            
-            let progress = 0;
-            let messageIndex = 0;
-            const stepSize = Math.ceil(100 / bootMessages.length);
-
-            const bootInterval = setInterval(() => {
-                // Faster progression for snappier feel
-                progress = Math.min(100, progress + 12);
-                loadingFill.style.width = progress + '%';
-
-                // Emit next message when crossing step thresholds
-                while (messageIndex < bootMessages.length && progress >= (messageIndex + 1) * stepSize) {
-                    const msg = bootMessages[messageIndex];
-                    bootText.innerHTML += msg + '\n';
-                    bootStatus.textContent = msg;
-                    messageIndex++;
-                }
-
-                if (progress >= 100) {
-                    clearInterval(bootInterval);
-                    // Quick fade out then show dialog
-                    bootScreen.classList.add('fade-out');
-                    setTimeout(() => {
-                        bootScreen.style.display = 'none';
-                        visitorDialog.style.display = 'flex';
-                    }, 250);
-                }
-            }, 80);
-        }
-        
-        // Render AI recruiter skills with floating logos and Linux vibe
-        function renderAiSkillsPanel(panel){
-            const logos = {
-              python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-              java: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
-              sql: '',
-              pytorch: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg',
-              huggingface: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg',
-              tensorflow: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg',
-              sklearn: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg',
-              pandas: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
-              numpy: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg',
-              opencv: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg',
-              node: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
-              azure: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg',
-              docker: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
-              kaggle: 'https://www.kaggle.com/static/images/site-logo.svg',
-              tensorboard: 'https://upload.wikimedia.org/wikipedia/commons/1/11/TensorFlowLogo.svg',
-              linux: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg'
-            };
-
-            function tile(name, key){
-                const img = logos[key] || '';
-                const imgTag = img ? `<img class="ai-skill-logo" src="${img}" alt="${name}">` : `<div class="ai-chip">${name}</div>`;
-                return `<div class="ai-skill-tile" onclick="gotoSkillProjects('${key || name.toLowerCase()}')">${imgTag}<div class="mt-2 text-sm">${name}</div></div>`;
-            }
-
-            const html = `
-                <div class="p-6">
-                  <h2 class="text-2xl font-bold text-green-400 mb-6">AI Technical Skills</h2>
-
-                  <div class="mb-6">
-                    <div class="ai-section-title">Languages</div>
-                    <div class="ai-skill-grid">
-                      ${tile('Python','python')}
-                      ${tile('SQL','sql')}
-                      ${tile('Java','java')}
-                    </div>
-                  </div>
-
-                  <div class="mb-6">
-                    <div class="ai-section-title">Libraries & Frameworks</div>
-                    <div class="ai-skill-grid">
-                      ${tile('PyTorch','pytorch')}
-                      ${tile('HuggingFace','huggingface')}
-                      ${tile('TensorFlow','tensorflow')}
-                      ${tile('Scikit-learn','sklearn')}
-                      ${tile('Pandas','pandas')}
-                      ${tile('NumPy','numpy')}
-                      ${tile('OpenCV','opencv')}
-                      ${tile('Node.js','node')}
-                    </div>
-                  </div>
-
-                  <div class="mb-6">
-                    <div class="ai-section-title">Tools</div>
-                    <div class="ai-skill-grid">
-                      ${tile('Azure','azure')}
-                      ${tile('Docker','docker')}
-                      ${tile('Kaggle','kaggle')}
-                      ${tile('TensorBoard','tensorboard')}
-                      ${tile('Linux','linux')}
-                    </div>
-                  </div>
-                </div>
-            `;
-            panel.innerHTML = html;
-        }
-
-        function initializeSkillsPanel() {
-            const panel = document.getElementById('skills-panel');
-            if (panel) {
-                renderAiSkillsPanel(panel);
-            }
-        }
-
-        const aiTechIconMap = {
-            'pytorch': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg',
-            'whisper': 'https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg',
-            'openai whisper': 'https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg',
-            'huggingface': 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg',
-            'numpy': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg',
-            'opencv': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg',
-            'fastapi': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg',
-            'docker': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
-            'azure': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg',
-            'kotlin': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg',
-            'node.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
-            'nodejs': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
-            'postgresql': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
-            'stripe': 'https://upload.wikimedia.org/wikipedia/commons/4/4f/Stripe_Logo%2C_revised_2016.svg',
-            'github': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
-            'react': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
-            'mongodb': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
-            'redis': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg',
-            'vue': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg',
-            'vue.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg',
-            'firebase': 'https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg',
-            'tailwind': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg',
-            'tailwindcss': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg',
-            'vite': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg',
-            'nvidia': 'https://upload.wikimedia.org/wikipedia/sco/thumb/2/21/Nvidia_logo.svg/2560px-Nvidia_logo.svg.png',
-            'python': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg'
-        };
-
-        const projectModal = document.getElementById('project-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalHeroImg = document.getElementById('modal-hero-img');
-        const modalTech = document.getElementById('modal-tech');
-        const modalDescription = document.getElementById('modal-description');
-        const modalDetails = document.getElementById('modal-details');
-        const modalCloseBtn = projectModal ? projectModal.querySelector('.modal-close') : null;
-
-        function normalizeTechName(name) {
-            return (name || '').toLowerCase().trim();
-        }
-
-        function renderTechIcons(container, stack) {
-            if (!container) return;
-            container.innerHTML = '';
-            (stack || []).forEach(name => {
-                const iconSrc = aiTechIconMap[normalizeTechName(name)] || aiTechIconMap[normalizeTechName(name).replace(/\s+/g, '')];
-                if (iconSrc) {
-                    const img = document.createElement('img');
-                    img.src = iconSrc;
-                    img.alt = name + ' logo';
-                    container.appendChild(img);
-                } else {
-                    const badge = document.createElement('span');
-                    badge.className = 'pill';
-                    badge.textContent = name;
-                    container.appendChild(badge);
-                }
-            });
-        }
-
-        function escapeHtml(str = '') {
-
-            return str
-
-                .replace(/&/g, '&amp;')
-
-                .replace(/</g, '&lt;')
-
-                .replace(/>/g, '&gt;');
-
-        }
-
-
-
-        function formatMarkdown(text = '') {
-
-            const codeBlocks = [];
-
-            let working = text.replace(/```([\s\S]*?)```/g, (_, code) => {
-
-                codeBlocks.push(code);
-
-                return `@@CODE_BLOCK_${codeBlocks.length - 1}@@`;
-
-            });
-
-
-
-            working = escapeHtml(working)
-
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-
-                .replace(/\r?\n/g, '<br>');
-
-
-
-            return working.replace(/@@CODE_BLOCK_(\d+)@@/g, (_, idx) => {
-
-                const code = escapeHtml(codeBlocks[idx] || '');
-
-                return `<pre><code>${code}</code></pre>`;
-
-            });
-
-        }
-
-
-
-        function buildAiProjectCard(project) {
-            const card = document.createElement('div');
-            card.className = 'case-card cursor-pointer';
-            card.setAttribute('data-aos', 'fade-up');
-
-            const media = document.createElement('div');
-            media.className = 'case-media';
-            const img = document.createElement('img');
-            img.src = project.image || '';
-            img.alt = `${project.name || 'AI project'} visuals`;
-            media.appendChild(img);
-            card.appendChild(media);
-
-            const title = document.createElement('div');
-            title.className = 'case-title';
-            title.textContent = project.name || '';
-            card.appendChild(title);
-
-            const desc = document.createElement('p');
-            desc.className = 'case-desc';
-            desc.innerHTML = formatMarkdown(project.description || '');
-            card.appendChild(desc);
-
-            const techHolder = document.createElement('div');
-            techHolder.className = 'tech-logo-grid';
-            renderTechIcons(techHolder, project.tech_stack);
-            card.appendChild(techHolder);
-
-            card.addEventListener('click', () => openProjectModal(project));
-            return card;
-        }
-
-        function openProjectModal(project) {
-            if (!projectModal) return;
-            modalTitle.textContent = project.name || '';
-            if (project.image) {
-                modalHeroImg.src = project.image;
-                modalHeroImg.alt = project.name + ' hero image';
-            } else {
-                modalHeroImg.removeAttribute('src');
-                modalHeroImg.alt = '';
-            }
-            renderTechIcons(modalTech, project.tech_stack);
-            modalDescription.innerHTML = formatMarkdown(project.description || '');
-            modalDetails.innerHTML = '';
-            (project.details || []).forEach((detail, index) => {
-                const row = document.createElement('div');
-                row.className = 'detail-row' + (index % 2 === 1 ? ' reverse' : '');
-
-                const textWrap = document.createElement('div');
-                textWrap.className = 'detail-text';
-                const heading = document.createElement('h4');
-                heading.textContent = detail.title || '';
-                const paragraph = document.createElement('p');
-                paragraph.innerHTML = formatMarkdown(detail.text || '');
-                textWrap.appendChild(heading);
-                textWrap.appendChild(paragraph);
-
-                const mediaWrap = document.createElement('div');
-                mediaWrap.className = 'detail-media';
-                if (detail.image) {
-                    const img = document.createElement('img');
-                    img.src = detail.image;
-                    img.alt = (detail.title || project.name || 'Project detail') + ' visual';
-                    mediaWrap.appendChild(img);
-                }
-
-                if (index % 2 === 1) {
-                    if (mediaWrap.childElementCount) {
-                        row.appendChild(mediaWrap);
-                    }
-                    row.appendChild(textWrap);
-                } else {
-                    row.appendChild(textWrap);
-                    if (mediaWrap.childElementCount) {
-                        row.appendChild(mediaWrap);
-                    }
-                }
-                modalDetails.appendChild(row);
-            });
-            projectModal.classList.remove('hidden');
-            projectModal.classList.add('active');
-            document.body.classList.add('modal-open');
-        }
-
-        function closeProjectModal() {
-            if (!projectModal) return;
-            projectModal.classList.add('hidden');
-            projectModal.classList.remove('active');
-            document.body.classList.remove('modal-open');
-        }
-
-        async function loadAiProjects() {
-            const list = document.getElementById('ai-projects-list');
-            if (!list) return;
-            try {
-                const response = await fetch('aiproj.json');
-                if (!response.ok) throw new Error('Failed to load AI projects');
-                const projects = await response.json();
-                if (!Array.isArray(projects)) throw new Error('Invalid AI project format');
-                list.innerHTML = '';
-                projects.forEach(project => {
-                    const card = buildAiProjectCard(project);
-                    list.appendChild(card);
-                });
-                if (projects.length === 0) {
-                    list.innerHTML = '<div class=\"text-sm text-gray-400\">No AI projects published yet.</div>';
-                } else if (window.AOS && typeof window.AOS.refresh === 'function') {
-                    window.AOS.refresh();
-                }
-            } catch (error) {
-                console.error(error);
-                list.innerHTML = '<div class="text-sm text-red-400">Unable to load AI projects right now.</div>';
-            }
-        }
-
-        if (modalCloseBtn) {
-            modalCloseBtn.addEventListener('click', closeProjectModal);
-        }
-        if (projectModal) {
-            projectModal.addEventListener('click', (event) => {
-                if (event.target === projectModal) {
-                    closeProjectModal();
-                }
-            });
-        }
-        window.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && projectModal && !projectModal.classList.contains('hidden')) {
-                closeProjectModal();
-            }
-        });
-
-
-        // Initialize with boot sequence
-        window.onload = function() {
-            initializeSkillsPanel();
-            loadAiProjects();
-            if (window.feather) { try { feather.replace(); } catch(e){} }
-            bootSystem();
-        };
-
-        // Navigate to projects for a given skill (placeholder wiring)
-        function gotoSkillProjects(slug){
-            console.log('Open projects for skill:', slug);
-            showPanel('projects');
-            showProjectType('ai');
-            // Future: filter/highlight projects by slug
-        }
-        
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>
+
+
+
+
+
