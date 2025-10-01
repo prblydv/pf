@@ -45,31 +45,6 @@ function showContent(type) {
     if (window.feather) { try { feather.replace(); } catch(e){} }
 }
 
-// Visitor type variable
-let visitorType = 'friend'; // default
-
-// Set visitor type and proceed
-function setVisitorType(type) {
-    visitorType = type;
-    document.getElementById('visitor-dialog').style.display = 'none';
-    document.getElementById('main-content').style.display = 'flex';
-    if (window.feather) { try { feather.replace(); } catch(e){} }
-    // Land in terminal and show quick instructions
-    showPanel('terminal');
-    showTerminalInstructions();
-    const focusLater = () => {
-const el = document.getElementById('command-input');
-if (el) el.focus();
-    };
-    setTimeout(focusLater, 50);
-
-    console.log(`Visitor mode selected: ${type}`);
-}
-
-// Close AI recruiter page
-function closeAiPage() {
-    document.getElementById('ai-recruiter-page').classList.add('hidden');
-}
 
 // Close modal (legacy; not used after inline panels but kept safe)
 function closeModal(modalId) {
@@ -213,13 +188,7 @@ function processCommand(command) {
         // Stay in terminal; print role-specific info
         outputLine = document.createElement('div');
         outputLine.className = 'terminal-line output';
-        if (visitorType === 'ai') {
-            outputLine.textContent = "You are visiting as: AI Recruiter.";
-        } else if (visitorType === 'software') {
-            outputLine.textContent = "You are visiting as: Software Recruiter.";
-        } else {
-            outputLine.textContent = "You are visiting as: Friend.";
-        }
+        outputLine.textContent = 'You are exploring the portfolio.';
     } else if (command === 'help' || command === '') {
         outputLine = document.createElement('div');
         outputLine.className = 'terminal-line output';
@@ -246,78 +215,6 @@ function processCommand(command) {
         terminalBody.appendChild(outputLine);
     }
     terminalBody.scrollTop = terminalBody.scrollHeight;
-}
-
-// Boot sequence
-function bootSystem() {
-    const bootScreen = document.getElementById('boot-screen');
-    const mainContent = document.getElementById('main-content');
-    const visitorDialog = document.getElementById('visitor-dialog');
-    const skipBoot = document.body?.dataset?.skipBoot === 'true';
-
-    if (!bootScreen || !mainContent || !visitorDialog) {
-        return;
-    }
-
-    if (skipBoot) {
-        bootScreen.style.display = 'none';
-        visitorDialog.style.display = 'none';
-        mainContent.style.display = 'flex';
-        if (window.AOS) {
-            try {
-                window.AOS.init();
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        return;
-    }
-
-    const bootText = document.getElementById('boot-text');
-    const loadingFill = document.getElementById('loading-fill');
-    const bootStatus = document.getElementById('boot-status');
-
-    const bootMessages = [
-        'Starting kernel...',
-        'Initializing hardware...',
-        'Loading drivers...',
-        'Mounting filesystems...',
-        'Starting system services...',
-        'Loading user environment...',
-        'Initializing portfolio explorer...',
-        'System ready!'
-    ];
-
-    let progress = 0;
-    let messageIndex = 0;
-    const stepSize = Math.ceil(100 / bootMessages.length);
-
-    const bootInterval = setInterval(() => {
-        progress = Math.min(100, progress + 12);
-        if (loadingFill) {
-            loadingFill.style.width = `${progress}%`;
-        }
-
-        while (messageIndex < bootMessages.length && progress >= (messageIndex + 1) * stepSize) {
-            const msg = bootMessages[messageIndex];
-            if (bootText) {
-                bootText.innerHTML += `${msg}\n`;
-            }
-            if (bootStatus) {
-                bootStatus.textContent = msg;
-            }
-            messageIndex++;
-        }
-
-        if (progress >= 100) {
-            clearInterval(bootInterval);
-            bootScreen.classList.add('fade-out');
-            setTimeout(() => {
-                bootScreen.style.display = 'none';
-                visitorDialog.style.display = 'flex';
-            }, 250);
-        }
-    }, 80);
 }
 
 // Render AI recruiter skills with floating logos and Linux vibe with floating logos and Linux vibe
@@ -823,13 +720,50 @@ window.addEventListener('keydown', (event) => {
 });
 
 
-// Initialize with boot sequence
+// Initialize app when DOM is ready
 window.onload = function() {
     initializeSkillsPanel();
-    loadAiProjects();
-    if (window.feather) { try { feather.replace(); } catch(e){} }
-    bootSystem();
+    if (typeof loadAiProjects === 'function') {
+        loadAiProjects();
+    }
+    if (window.feather) {
+        try { feather.replace(); } catch (e) { console.error(e); }
+    }
+    if (window.AOS) {
+        try { AOS.init(); } catch (e) { console.error(e); }
+    }
+    applyInitialViewFromUrl();
 };
+
+function applyInitialViewFromUrl() {
+    const panelTitle = document.getElementById('panel-title');
+    if (!panelTitle) {
+        return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view');
+    const type = params.get('type');
+
+    if (view === 'projects') {
+        showPanel('projects');
+        if (type === 'ai') {
+            showProjectType('ai');
+        } else if (type === 'software') {
+            showProjectType('software');
+        } else {
+            showProjectType('all');
+        }
+        return;
+    }
+
+    if (view === 'skills') {
+        showPanel('skills');
+        return;
+    }
+
+    showPanel('terminal');
+    showTerminalInstructions();
+}
 
 // Navigate to projects for a given skill (placeholder wiring)
 function gotoSkillProjects(slug){
@@ -838,6 +772,14 @@ function gotoSkillProjects(slug){
     showProjectType('ai');
     // Future: filter/highlight projects by slug
 }
+
+
+
+
+
+
+
+
 
 
 

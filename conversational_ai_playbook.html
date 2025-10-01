@@ -40,13 +40,13 @@
                         <span>projects</span>
                     </div>
                     <div class="folder-children ml-6 mt-2">
-                        <a class="explorer-item flex items-center cursor-pointer text-blue-300 hover:bg-[#2d2d44]" href="index.html#software-projects">
+                        <a class="explorer-item flex items-center cursor-pointer text-blue-300 hover:bg-[#2d2d44]" href="index.html?view=projects&amp;type=software#projects-panel">
                             <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h11a2 2 0 0 1 2 2z"></path>
                             </svg>
                             <span>software_projects</span>
                         </a>
-                        <a class="explorer-item flex items-center cursor-pointer text-purple-300 hover:bg-[#2d2d44]" href="index.html#ai-projects-list">
+                        <a class="explorer-item flex items-center cursor-pointer text-purple-300 hover:bg-[#2d2d44]" href="index.html?view=projects&amp;type=ai#projects-panel">
                             <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h11a2 2 0 0 1 2 2z"></path>
                             </svg>
@@ -80,11 +80,11 @@
                 <div>Storage: 1.2 TB Free</div>
             </div>
         </div>
-        <div class='flex-1 bg-[#05060a] overflow-y-auto project-detail-surface'>
-            <div id='terminal-body' class='hidden'></div>
-            <div id='skills-panel' class='hidden'></div>
-            <div id='projects-panel' class='terminal-body flex-1 overflow-y-auto p-6 md:p-10'>
-                <a class='project-back-link' href='index.html#projects-panel'><i data-feather="arrow-left"></i><span>Back to Project List</span></a>
+        <div class='flex-1 bg-[#05060a] project-detail-surface'>
+            <div class='project-detail-wrapper'>
+                <div class='project-detail-content' id='projects-panel'>
+
+                <a class='project-back-link' href='index.html?view=projects&amp;type=ai#projects-panel'><i data-feather="arrow-left"></i><span>Back to Project List</span></a>
                 <header class='project-detail-header'>
                     <div class='project-banner-wrap'>
                         <img src='assets/images/project-banner-placeholder.svg' alt='Conversational AI Playbook hero banner' class='project-detail-banner'>
@@ -127,7 +127,17 @@
             </div>
         </div>
     </div>
+</div>
 
     <script src='main.js'></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+

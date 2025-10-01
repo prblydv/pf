@@ -3,7 +3,7 @@
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>DevOps Command Center � Portfolio Explorer</title>
+    <title>Finance Management Application</title>
     <link rel='icon' type='image/x-icon' href='/static/favicon.ico'>
     <script src='https://cdn.tailwindcss.com'></script>
     <link href='https://unpkg.com/aos@2.3.1/dist/aos.css' rel='stylesheet'>
@@ -40,7 +40,7 @@
                         <span>projects</span>
                     </div>
                     <div class="folder-children ml-6 mt-2">
-                        <a class="explorer-item flex items-center cursor-pointer text-blue-300 hover:bg-[#2d2d44]" href="index.html#software-projects">
+                        <a class="explorer-item flex items-center cursor-pointer text-blue-300 hover:bg-[#2d2d44]" href="index.html?view=projects&amp;type=software#projects-panel">
                             <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h11a2 2 0 0 1 2 2z"></path>
                             </svg>
@@ -80,54 +80,117 @@
                 <div>Storage: 1.2 TB Free</div>
             </div>
         </div>
-        <div class='flex-1 bg-[#05060a] overflow-y-auto project-detail-surface'>
-            <div id='terminal-body' class='hidden'></div>
-            <div id='skills-panel' class='hidden'></div>
-            <div id='projects-panel' class='terminal-body flex-1 overflow-y-auto p-6 md:p-10'>
-                <a class='project-back-link' href='index.html#projects-panel'><i data-feather="arrow-left"></i><span>Back to Project List</span></a>
-                <header class='project-detail-header'>
-                    <div class='project-banner-wrap'>
-                        <img src='assets/images/project-banner-placeholder.svg' alt='DevOps Command Center hero banner' class='project-detail-banner'>
-                    </div>
-                    <div class='project-heading-copy'>
-                        <span class='project-category-pill'>Software Project</span>
-                        <h1 class='project-detail-title'>DevOps Command Center</h1>
-                        <p class='project-detail-subtitle'>Orchestrating safe, observable releases across multi-cloud platforms.</p>
-                        <p class='project-detail-context'>Built for platform squads managing rapid-fire deployments, service reliability, and compliance gates in one pane of glass.</p>
-                    </div>
-                </header>
+<div class='flex-1 bg-[#05060a] project-detail-surface'>
+  <div class='project-detail-wrapper'>
+    <div class='project-detail-content' id='projects-panel'>
 
-                <section class='project-gallery-section'>
-                    <h2 class='project-section-title'>System Glimpses</h2>
-                    <div class='project-gallery-grid'>
-                        <img src='assets/images/project-diagram-placeholder.svg' alt='DevOps Command Center dashboard view'>
-                        <img src='assets/images/project-diagram-placeholder.svg' alt='DevOps Command Center flow diagram'>
-                        <img src='assets/images/project-diagram-placeholder.svg' alt='DevOps Command Center analytics view'>
-                    </div>
-                </section>
+      <a class='project-back-link' href='index.html?view=projects&type=software#projects-panel'>
+        <i data-feather="arrow-left"></i><span>Back to Project List</span>
+      </a>
 
-                <section class='project-writeup'>
-                    <article>
-                        <h3>Problem</h3>
-                        <p>Release and reliability data lived in silos, forcing engineers to swivel between dashboards during incidents.</p>
-                    </article>
-                    <article>
-                        <h3>Approach</h3>
-                        <p>Compose a unified telemetry layer, automate environment drift checks, and surface release readiness with intuitive visuals.</p>
-                    </article>
-                    <article>
-                        <h3>What I Delivered</h3>
-                        <p>Implemented streaming ingestion, resilience scoring widgets, and chatops hooks that let leaders trigger playbooks in seconds.</p>
-                    </article>
-                    <article>
-                        <h3>Impact</h3>
-                        <p>Cut mean time to detect by 43% and unlocked data-informed release approvals for global program managers.</p>
-                    </article>
-                </section>
-            </div>
+      <header class='project-detail-header'>
+        <div class='project-banner-wrap'>
+          <img src='assets/images/Screenshot 2023-04-30 001309.png' alt='MoneyMaven App Banner' class='project-detail-banner'>
         </div>
+        <div class='project-heading-copy'>
+          <span class='project-category-pill'>Software Project</span>
+          <h1 class='project-detail-title'>Finance Management Application</h1>
+          <p class='project-detail-subtitle'>Built with Java + JHipster · CI/CD on GitHub · Role: Scrum Master</p>
+          <p class='project-detail-context'>
+            A collaborative capstone by 4 BSc students focused on simplifying personal finance with real-time analytics,
+            goal tracking, and expense monitoring — all in one seamless platform.
+          </p>
+        </div>
+      </header>
+
+<section class="project-gallery-section">
+  <h2 class="project-section-title">System Glimpses</h2>
+
+  <div class="image-feature">
+    <img src="assets/images/Screenshot 2023-03-13 202949.png" alt="Spending Summary View">
+    <div class="image-description">
+      <h4>Spending Summary View</h4>
+      <p>Shows weekly income, expenses, and budget insights using circular indicators. Recent expenses listed with breakdown.</p>
     </div>
+  </div>
+
+  <div class="image-feature reverse">
+    <img src="assets/images/Screenshot 2023-03-13 203017.png" alt="Dashboard Weekly Stats">
+    <div class="image-description">
+      <h4>Dashboard Weekly Stats</h4>
+      <p>Highlights weekly usage trends across days with responsive graph lines — helps users identify peak spending periods.</p>
+    </div>
+  </div>
+
+  <div class="image-feature">
+    <img src="assets/images/mm.png" alt="Category View UI">
+    <div class="image-description">
+      <h4>Category Breakdown</h4>
+      <p>Displays categorized expenses with color-coded UI and quick insights for each spending group.</p>
+    </div>
+  </div>
+
+
+
+
+      <section class='project-writeup'>
+        <article>
+          <h3>Problem</h3>
+          <p>
+            Managing personal finances often feels scattered — users juggle multiple apps for budgeting, tracking income, 
+            and visualizing spending. Existing apps are either too simplistic or too complex for everyday users. Our goal 
+            was to deliver a clean, actionable dashboard that simplifies financial decision-making.
+          </p>
+        </article>
+
+        <article>
+  <h3>Approach</h3>
+  <p>
+    We built the application using the <strong>JHipster generator</strong>, which scaffolded the project into a modular monorepo with key folders like <code>.jhipster</code>, <code>src</code>, <code>webpack</code>, and <code>.mvn</code> for Maven build support. The backend was generated in <strong>Java with Spring Boot</strong>, while the frontend used <strong>React.js</strong> with Webpack bundling.
+  </p>
+  <p>
+    We used <strong>Node.js</strong> and <strong>majh.js</strong> for deployment scripts and automation logic. Continuous Integration and Deployment (CI/CD) was implemented via <code>.gitlab-ci.yml</code>, ensuring every commit triggered linting, testing (via <code>jest</code>), and auto-deployment. Configuration files such as <code>cypress.config.ts</code> and <code>ngsw-config.json</code> enabled E2E testing and PWA support.
+  </p>
+  <p>
+    I served as the <strong>Scrum Master</strong> for our 4-member BSc team — organizing sprint planning, daily standups, and retrospectives. We followed a strict Git-based agile workflow using feature branches, pull requests, and GitHub Projects for tracking progress.
+  </p>
+</article>
+
+
+        <article>
+          <h3>What I Delivered</h3>
+          <ul>
+            <li>Led agile ceremonies and tracked progress using GitHub Projects.</li>
+            <li>Integrated CI/CD workflows for automated builds and deployments.</li>
+            <li>Optimized dashboard UX for mobile and desktop devices.</li>
+            <li>Ensured data integrity with backend validations and modular design.</li>
+          </ul>
+        </article>
+
+        <article>
+          <h3>Impact</h3>
+          <p>
+            The app was successfully deployed with zero downtime across sprints. We achieved smooth budget tracking, intuitive 
+            category-based analytics, and interactive reporting — helping users stay within budget 90% of the time, based on 
+            test user feedback.
+          </p>
+        </article>
+      </section>
+    </div>
+  </div>
+</div>
+
+    </div>
+</div>
 
     <script src='main.js'></script>
 </body>
 </html>
+
+
+
+
+
+
+
+

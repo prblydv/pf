@@ -13,147 +13,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="h-screen flex flex-col">
-    <!-- Boot Screen -->
-    <div id="boot-screen" class="boot-screen">
-        <div class="boot-text" id="boot-text"></div>
-        <div class="loading-bar">
-            <div class="loading-fill" id="loading-fill"></div>
-        </div>
-        <div id="boot-status">Initializing system...</div>
-    </div>
-    
-    <!-- Visitor Type Dialog -->
-    <div id="visitor-dialog" class="dialog-box">
-        <div class="dialog-content">
-            <h2 class="text-2xl font-bold text-green-400 mb-6">Who are you?</h2>
-            <p class="text-gray-300 mb-6">Please select your role to customize your portfolio experience:</p>
-            <button class="dialog-option" onclick="setVisitorType('ai')">
-                <i data-feather="cpu" class="mr-2"></i> AI Recruiter
-            </button>
-            <button class="dialog-option" onclick="setVisitorType('software')">
-                <i data-feather="code" class="mr-2"></i> Software Recruiter
-            </button>
-            <button class="dialog-option" onclick="setVisitorType('friend')">
-                <i data-feather="user" class="mr-2"></i> Friend
-            </button>
-        </div>
-    </div>
-    
-    <!-- AI Recruiter Page -->
-    <div id="ai-recruiter-page" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-        <div class="terminal-window w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div class="terminal-header">
-                <div class="flex">
-                    <div class="terminal-button button-red" onclick="closeAiPage()"></div>
-                    <div class="terminal-button button-yellow"></div>
-                    <div class="terminal-button button-green"></div>
-                </div>
-                <div class="ml-4 text-sm text-gray-300">ai_recruiter@portfolio: ~</div>
-            </div>
-            <div class="terminal-body overflow-y-auto p-6">
-                <h2 class="text-2xl font-bold text-green-400 mb-6">Skills</h2>
-                
-                <!-- Languages Section -->
-                <div class="mb-8" data-aos="fade-up">
-                    <h3 class="text-xl font-bold text-blue-400 mb-4 flex items-center">
-                        <i data-feather="code" class="mr-2"></i> Languages
-                    </h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" class="w-12 h-12 mb-2">
-                            <span>Python</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" class="w-12 h-12 mb-2">
-                            <span>Java</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
-                            <div class="w-12 h-12 mb-2 flex items-center justify-center bg-blue-900 rounded">
-                                <span class="text-lg font-bold">SQL</span>
-                            </div>
-                            <span>SQL</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Libraries Section -->
-                <div class="mb-8" data-aos="fade-up" data-aos-delay="200">
-                    <h3 class="text-xl font-bold text-purple-400 mb-4 flex items-center">
-                        <i data-feather="book" class="mr-2"></i> Libraries & Frameworks
-                    </h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" alt="PyTorch" class="w-12 h-12 mb-2">
-                            <span>PyTorch</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
-                            <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="HuggingFace" class="w-12 h-12 mb-2">
-                            <span>HuggingFace</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="TensorFlow" class="w-12 h-12 mb-2">
-                            <span>TensorFlow</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" alt="Scikit-learn" class="w-12 h-12 mb-2">
-                            <span>Scikit-learn</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" alt="Pandas" class="w-12 h-12 mb-2">
-                            <span>Pandas</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy" class="w-12 h-12 mb-2">
-                            <span>NumPy</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg" alt="OpenCV" class="w-12 h-12 mb-2">
-                            <span>OpenCV</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="Node.js" class="w-12 h-12 mb-2">
-                            <span>Node.js</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tools Section -->
-                <div data-aos="fade-up" data-aos-delay="400">
-                    <h3 class="text-xl font-bold text-yellow-400 mb-4 flex items-center">
-                        <i data-feather="tool" class="mr-2"></i> Tools & Platforms
-                    </h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="Git" class="w-12 h-12 mb-2">
-                            <span>Git</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker" class="w-12 h-12 mb-2">
-                            <span>Docker</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo bounce-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VSCode" class="w-12 h-12 mb-2">
-                            <span>VSCode</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo pulse-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" alt="TensorBoard" class="w-12 h-12 mb-2">
-                            <span>TensorBoard</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo rotate-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="Linux" class="w-12 h-12 mb-2">
-                            <span>Linux</span>
-                        </div>
-                        <div class="project-card p-4 flex flex-col items-center tech-logo float-animation">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" alt="GCP" class="w-12 h-12 mb-2">
-                            <span>GCP</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="flex-1 flex flex-col md:flex-row" id="main-content" style="display: none;">
+    <div class="flex-1 flex flex-col md:flex-row" id="main-content">
         <!-- Sidebar -->
         <div class="explorer-sidebar w-full md:w-64 p-4 flex flex-col">
             <div class="mb-6">
@@ -324,27 +184,35 @@
                         <article class="showcase-card">
                             <a class="showcase-link" href="devops_dashboard.html">
                                 <div class="showcase-media">
-                                    <img src="assets/images/project-thumb-placeholder.svg" alt="DevOps Command Center thumbnail">
+                                    <img src="assets/images/moneymavenlogo.png" alt="DevOps Command Center thumbnail">
                                 </div>
-                                <div class="showcase-body">
-                                    <h4 class="showcase-title">DevOps Command Center</h4>
-                                    <p class="showcase-summary">Realtime health dashboards, deployment insights, and incident automation for multi-cloud delivery teams.</p>
+                                    <div class="showcase-body">
+                                    <h4 class="showcase-title">MoneyMaven Finance Management App</h4>
+                                    <p class="showcase-summary">
+                                        Personal finance dashboards, budgeting, and analytics. Built by a 4‑member BSc team on
+                                        Java/Spring Boot (JHipster) + Angular, automated with Maven/Node.js and GitLab CI, container‑ready.
+                                    </p>
                                     <ul class="showcase-tech">
-                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angular/angular-original.svg" alt="Angular"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="Spring Boot"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg" alt="Maven"></li>
                                         <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="Node.js"></li>
+                                        <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg" alt="GitLab CI/CD"></li>
                                         <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker"></li>
                                     </ul>
-                                </div>
+                                    </div>
+
                             </a>
                         </article>
                         <article class="showcase-card">
                             <a class="showcase-link" href="cloud_finops_suite.html">
                                 <div class="showcase-media">
-                                    <img src="assets/images/project-thumb-placeholder.svg" alt="Cloud FinOps Suite thumbnail">
+                                    <img src="assets/images/collegeapp/banner.png" alt="Cloud FinOps Suite thumbnail">
                                 </div>
                                 <div class="showcase-body">
-                                    <h4 class="showcase-title">Cloud FinOps Suite</h4>
-                                    <p class="showcase-summary">Forecasting, budgeting, and anomaly alerts that keep cross-cloud spend predictable for engineering leads.</p>
+                                    <h4 class="showcase-title">Full stack College application</h4>
+                                    <p class="showcase-summary">Developed a comprehensive full-stack application for college administration, streamlining key processes including New Admissions, real-time College Notifications, integrated Student Management, Library Management, and Fee Management. Improved operational efficiency and provided a unified digital platform for students and staff.</p>
                                     <ul class="showcase-tech">
                                         <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" alt="Vue"></li>
                                         <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"></li>
@@ -769,6 +637,7 @@
     <script src="main.js"></script>
 </body>
 </html>
+
 
 
 
